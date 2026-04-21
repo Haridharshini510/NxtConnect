@@ -1,0 +1,85 @@
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
+import ConnectionCard from '../components/student/ConnectionCard';
+import toast from 'react-hot-toast';
+
+export default function MyConnections() {
+  const [connections, setConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+
+  const fetchConnections = async () => {
+    try {
+      const res = await api.get('/connections/my');
+      setConnections(res.data.connections);
+    } catch {
+      toast.error('Failed to load connections');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchConnections(); }, []);
+
+  const handleAccept = async (id) => {
+    try {
+      await api.put(`/connections/${id}/accept`);
+      toast.success('Connection accepted!');
+      fetchConnections();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to accept');
+    }
+  };
+
+  const handleDecline = async (id) => {
+    try {
+      await api.put(`/connections/${id}/decline`);
+      toast.success('Connection declined');
+      fetchConnections();
+    } catch {
+      toast.error('Failed to decline');
+    }
+  };
+
+  const filters = ['all', 'pending', 'active', 'declined'];
+  const filtered = filter === 'all' ? connections : connections.filter((c) => c.status === filter);
+
+  return (
+    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">My Connections</h1>
+      <p className="text-gray-500 text-sm mb-6">{connections.length} total connections</p>
+
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        {filters.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
+              filter === f ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {f} {f === 'all' ? `(${connections.length})` : `(${connections.filter((c) => c.status === f).length})`}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="space-y-3">
+          {[...Array(3)].map((_, i) => <div key={i} className="card h-24 animate-pulse bg-gray-100" />)}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">
+          <p className="text-lg font-medium">No connections yet</p>
+          <p className="text-sm mt-1">Browse mentors and send a connection request to get started.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((conn) => (
+            <ConnectionCard key={conn._id} connection={conn} onAccept={handleAccept} onDecline={handleDecline} />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
