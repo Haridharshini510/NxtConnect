@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
 const SocketContext = createContext(null);
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || '/';
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ export const SocketProvider = ({ children }) => {
     }
 
     const token = localStorage.getItem('token');
-    socketRef.current = io('/', {
+    socketRef.current = io(SOCKET_URL, {
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 5,
