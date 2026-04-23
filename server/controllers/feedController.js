@@ -1,4 +1,4 @@
-const FeedPost = require('../models/FeedPost');
+const FeedPost = require('../models/Feedpost');
 const { createNotification } = require('../services/notificationService');
 
 // @desc  Get feed posts (paginated)

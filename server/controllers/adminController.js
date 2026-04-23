@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Connection = require('../models/Connection');
 const Job = require('../models/Job');
 const Workshop = require('../models/Workshop');
-const FeedPost = require('../models/FeedPost');
+const FeedPost = require('../models/Feedpost');
 const MentorProfile = require('../models/MentorProfile');
 
 // @desc  Platform-wide stats
