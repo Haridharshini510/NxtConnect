@@ -1,0 +1,353 @@
+/* ============================================
+   NXTCONNECT DESIGN SYSTEM - THEME
+   Professional, trustworthy, minimal design
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Colors */
+    --color-primary: #1e3a8a;
+    --color-primary-light: #3b82f6;
+    --color-primary-dark: #172554;
+    --color-success: #16a34a;
+    --color-warning: #f59e0b;
+    --color-error: #dc2626;
+    --color-info: #3b82f6;
+
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-muted: #f1f5f9;
+    --bg-overlay: rgba(15, 23, 42, 0.4);
+
+    /* Text Colors */
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-tertiary: #64748b;
+    --text-disabled: #cbd5e1;
+    --text-inverse: #ffffff;
+
+    /* Borders */
+    --border-subtle: #e2e8f0;
+    --border-default: #cbd5e1;
+    --border-strong: #94a3b8;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 200ms ease-in-out;
+    --transition-slow: 300ms ease-in-out;
+
+    /* Z-index scale */
+    --z-dropdown: 1000;
+    --z-modal: 1100;
+    --z-tooltip: 1200;
+    --z-notification: 1300;
+  }
+
+  * {
+    @apply border-slate-200;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-base;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+  }
+
+  /* Typography Hierarchy */
+  h1 {
+    @apply text-5xl font-bold leading-tight tracking-tight;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    @apply text-4xl font-bold leading-tight tracking-tight;
+    color: var(--text-primary);
+  }
+
+  h3 {
+    @apply text-3xl font-bold leading-tight tracking-tight;
+    color: var(--text-primary);
+  }
+
+  h4 {
+    @apply text-2xl font-semibold leading-snug;
+    color: var(--text-primary);
+  }
+
+  h5 {
+    @apply text-xl font-semibold leading-snug;
+    color: var(--text-primary);
+  }
+
+  h6 {
+    @apply text-lg font-semibold leading-snug;
+    color: var(--text-primary);
+  }
+
+  p {
+    @apply text-base text-slate-700;
+  }
+
+  label {
+    @apply text-sm font-medium text-slate-900;
+  }
+
+  small {
+    @apply text-xs text-slate-500;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary-600 no-underline transition-colors hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Focus Rings */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full hover:bg-slate-400;
+  }
+}
+
+/* ============================================
+   COMPONENT LAYERS
+   ============================================ */
+
+@layer components {
+  /* ===== Spacing Utility Classes ===== */
+  .gap-xs {
+    @apply gap-1;
+  }
+  .gap-sm {
+    @apply gap-2;
+  }
+  .gap-md {
+    @apply gap-3;
+  }
+  .gap-lg {
+    @apply gap-4;
+  }
+  .gap-xl {
+    @apply gap-6;
+  }
+  .gap-2xl {
+    @apply gap-8;
+  }
+
+  /* ===== Container ===== */
+  .container-tight {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-full {
+    @apply max-w-full px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ===== Surface/Card Base ===== */
+  .surface {
+    @apply bg-white rounded-lg border border-slate-200 shadow-sm;
+  }
+
+  .surface-lg {
+    @apply bg-white rounded-xl border border-slate-200 shadow-md;
+  }
+
+  .surface-muted {
+    @apply bg-slate-50 rounded-lg border border-slate-200;
+  }
+
+  .surface-elevated {
+    @apply bg-white rounded-xl border border-slate-200 shadow-lg;
+  }
+
+  /* ===== Typography Utilities ===== */
+  .text-h1 {
+    @apply text-5xl font-bold leading-tight tracking-tight;
+  }
+
+  .text-h2 {
+    @apply text-4xl font-bold leading-tight tracking-tight;
+  }
+
+  .text-h3 {
+    @apply text-3xl font-bold leading-tight;
+  }
+
+  .text-h4 {
+    @apply text-2xl font-semibold leading-snug;
+  }
+
+  .text-h5 {
+    @apply text-xl font-semibold leading-snug;
+  }
+
+  .text-h6 {
+    @apply text-lg font-semibold leading-snug;
+  }
+
+  .text-body {
+    @apply text-base text-slate-700 leading-relaxed;
+  }
+
+  .text-body-sm {
+    @apply text-sm text-slate-600 leading-relaxed;
+  }
+
+  .text-label {
+    @apply text-sm font-medium text-slate-900;
+  }
+
+  .text-meta {
+    @apply text-xs text-slate-500 font-medium tracking-wide;
+  }
+
+  .text-muted {
+    @apply text-slate-500;
+  }
+
+  .text-error {
+    @apply text-error-600;
+  }
+
+  .text-success {
+    @apply text-success-600;
+  }
+
+  .text-warning {
+    @apply text-warning-600;
+  }
+
+  /* ===== Disabled State ===== */
+  .disabled-state {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* ===== Visibility ===== */
+  .visually-hidden {
+    @apply sr-only;
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Text truncation */
+  .line-clamp-1 {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    @apply overflow-hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    @apply overflow-hidden;
+  }
+
+  /* Transitions */
+  .transition-fast {
+    @apply transition-all duration-fast ease-in-out;
+  }
+
+  .transition-base {
+    @apply transition-all duration-base ease-in-out;
+  }
+
+  .transition-slow {
+    @apply transition-all duration-slow ease-in-out;
+  }
+
+  /* Animations */
+  .animate-fade-in {
+    @apply animate-fade-in;
+  }
+
+  .animate-slide-in {
+    @apply animate-slide-in;
+  }
+
+  /* Gradients */
+  .gradient-primary {
+    @apply bg-gradient-to-br from-primary-600 to-primary-700;
+  }
+
+  .gradient-success {
+    @apply bg-gradient-to-br from-success-600 to-success-700;
+  }
+
+  /* Glass morphism */
+  .glass {
+    @apply backdrop-blur-md bg-white/80 border border-white/20;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-slate-900/80 border border-white/20;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-all hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .hover-darken {
+    @apply transition-colors hover:bg-slate-100;
+  }
+
+  /* Layout utilities */
+  .page-shell {
+    @apply min-h-screen bg-slate-50;
+  }
+
+  .content-area {
+    @apply flex-1 overflow-auto;
+  }
+}

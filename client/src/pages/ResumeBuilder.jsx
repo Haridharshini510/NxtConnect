@@ -1,0 +1,367 @@
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
+import { Save, Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Loader, AlertCircle, CheckCircle } from 'lucide-react';
+
+const SectionHeader = ({ title, open, onToggle }) => (
+  <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors rounded-t-xl">
+    <span className="font-semibold text-slate-800">{title}</span>
+    {open ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
+  </button>
+);
+
+export default function ResumeBuilder() {
+  const [resume, setResume] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+  const [openSection, setOpenSection] = useState('Personal Info');
+  const [generatingBullet, setGeneratingBullet] = useState(null);
+  const [bulletTask, setBulletTask] = useState({});
+
+  useEffect(() => {
+    api.get('/resume').then((r) => {
+      setResume(r.data.resume);
+      if (r.data.resume.aiAnalysis?.analyzedAt) setAnalysis(r.data.resume.aiAnalysis);
+    }).catch(() => toast.error('Failed to load resume'));
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const res = await api.put('/resume', resume);
+      setResume(res.data.resume);
+      toast.success('Resume saved!');
+    } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
+  };
+
+  const analyze = async () => {
+    setAnalyzing(true);
+    try {
+      await api.put('/resume', resume); // save first
+      const res = await api.post('/resume/analyze');
+      setAnalysis(res.data.analysis);
+      toast.success('AI analysis complete!');
+    } catch (err) { toast.error(err.response?.data?.message || 'Analysis failed'); }
+    finally { setAnalyzing(false); }
+  };
+
+  const generateBullet = async (expIndex) => {
+    const exp = resume.experience[expIndex];
+    const task = bulletTask[expIndex];
+    if (!task?.trim()) return toast.error('Describe what you did first');
+    setGeneratingBullet(expIndex);
+    try {
+      const res = await api.post('/resume/generate-bullet', { role: exp.role, company: exp.company, task });
+      const updated = [...resume.experience];
+      updated[expIndex].bullets = [...(updated[expIndex].bullets || []), res.data.bullet];
+      setResume({ ...resume, experience: updated });
+      setBulletTask({ ...bulletTask, [expIndex]: '' });
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to generate'); }
+    finally { setGeneratingBullet(null); }
+  };
+
+  const setInfo = (field, val) => setResume({ ...resume, personalInfo: { ...resume.personalInfo, [field]: val } });
+  const addExp = () => setResume({ ...resume, experience: [...(resume.experience || []), { company: '', role: '', location: '', duration: '', description: '', bullets: [] }] });
+  const removeExp = (i) => setResume({ ...resume, experience: resume.experience.filter((_, idx) => idx !== i) });
+  const setExp = (i, field, val) => { const e = [...resume.experience]; e[i] = { ...e[i], [field]: val }; setResume({ ...resume, experience: e }); };
+  const addEdu = () => setResume({ ...resume, education: [...(resume.education || []), { institution: '', degree: '', field: '', year: '', cgpa: '' }] });
+  const removeEdu = (i) => setResume({ ...resume, education: resume.education.filter((_, idx) => idx !== i) });
+  const setEdu = (i, field, val) => { const e = [...resume.education]; e[i] = { ...e[i], [field]: val }; setResume({ ...resume, education: e }); };
+  const addProj = () => setResume({ ...resume, projects: [...(resume.projects || []), { name: '', description: '', techStack: [], link: '' }] });
+  const removeProj = (i) => setResume({ ...resume, projects: resume.projects.filter((_, idx) => idx !== i) });
+  const setProj = (i, field, val) => { const p = [...resume.projects]; p[i] = { ...p[i], [field]: val }; setResume({ ...resume, projects: p }); };
+
+  if (!resume) return <div className="card flex h-64 items-center justify-center text-slate-500"><Loader className="animate-spin mr-2" /> Loading resume...</div>;
+
+  const toggle = (s) => setOpenSection(openSection === s ? '' : s);
+  const inp = "input text-sm";
+
+  return (
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="section-headline">Resume builder</h1>
+          <p className="section-subtle">Build your resume section by section and get AI feedback.</p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={save} disabled={saving} className="btn-secondary flex items-center gap-2 text-sm">
+            <Save size={15} /> {saving ? 'Saving...' : 'Save'}
+          </button>
+          <button onClick={analyze} disabled={analyzing} className="btn-primary flex items-center gap-2 text-sm">
+            <Sparkles size={15} /> {analyzing ? 'Analyzing...' : 'AI Analyze'}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Builder */}
+        <div className="lg:col-span-2 space-y-4">
+
+          {/* Personal Info */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Personal information" open={openSection === 'Personal Info'} onToggle={() => toggle('Personal Info')} />
+            {openSection === 'Personal Info' && (
+              <div className="p-5 grid sm:grid-cols-2 gap-4">
+                {[['name','Full Name'],['email','Email'],['phone','Phone'],['location','Location'],['linkedin','LinkedIn URL'],['github','GitHub URL'],['portfolio','Portfolio URL']].map(([f, label]) => (
+                  <div key={f}>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+                    <input className={inp} value={resume.personalInfo?.[f] || ''} onChange={(e) => setInfo(f, e.target.value)} placeholder={label} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Summary */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Professional summary" open={openSection === 'Summary'} onToggle={() => toggle('Summary')} />
+            {openSection === 'Summary' && (
+              <div className="p-5">
+                <textarea className={`${inp} resize-none`} rows={4} maxLength={1000}
+                  placeholder="A brief 3-4 sentence summary of your skills, goals, and what you bring to the table..."
+                  value={resume.summary || ''}
+                  onChange={(e) => setResume({ ...resume, summary: e.target.value })} />
+                <p className="text-xs text-slate-400 mt-1 text-right">{(resume.summary || '').length}/1000</p>
+              </div>
+            )}
+          </div>
+
+          {/* Experience */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Experience" open={openSection === 'Experience'} onToggle={() => toggle('Experience')} />
+            {openSection === 'Experience' && (
+              <div className="p-5 space-y-6">
+                {(resume.experience || []).map((exp, i) => (
+                  <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Experience #{i + 1}</span>
+                      <button onClick={() => removeExp(i)} className="text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={15} /></button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {[['role','Job Title'],['company','Company'],['location','Location'],['duration','Duration (e.g. Jun 2023 – Present)']].map(([f, label]) => (
+                        <div key={f}>
+                          <label className="block text-xs text-gray-500 mb-1">{label}</label>
+                          <input className={inp} value={exp[f] || ''} onChange={(e) => setExp(i, f, e.target.value)} placeholder={label} />
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Description</label>
+                      <textarea className={`${inp} resize-none`} rows={2} value={exp.description || ''} onChange={(e) => setExp(i, 'description', e.target.value)} placeholder="Brief overview of your role..." />
+                    </div>
+                    {/* Bullet points */}
+                    {exp.bullets?.length > 0 && (
+                      <div className="space-y-1">
+                        {exp.bullets.map((b, bi) => (
+                          <div key={bi} className="flex items-start gap-2 text-sm">
+                            <span className="text-blue-400 mt-1">•</span>
+                            <span className="flex-1 text-gray-700">{b}</span>
+                            <button onClick={() => { const e = [...resume.experience]; e[i].bullets = e[i].bullets.filter((_, x) => x !== bi); setResume({ ...resume, experience: e }); }}
+                              className="text-gray-300 hover:text-red-400 flex-shrink-0"><Trash2 size={12} /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {/* AI bullet generator */}
+                    <div className="bg-blue-50 rounded-lg p-3 space-y-2">
+                      <p className="text-xs font-medium text-blue-700 flex items-center gap-1"><Sparkles size={12} /> AI Bullet Generator</p>
+                      <input className={inp} placeholder="Describe what you did (e.g. built a REST API for user auth)"
+                        value={bulletTask[i] || ''} onChange={(e) => setBulletTask({ ...bulletTask, [i]: e.target.value })} />
+                      <button onClick={() => generateBullet(i)} disabled={generatingBullet === i}
+                        className="btn-primary text-xs flex items-center gap-1 py-1.5">
+                        {generatingBullet === i ? <><Loader size={11} className="animate-spin" /> Generating...</> : <><Sparkles size={11} /> Generate Bullet</>}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addExp} className="btn-secondary w-full flex items-center justify-center gap-2 text-sm">
+                  <Plus size={15} /> Add Experience
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Education */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Education" open={openSection === 'Education'} onToggle={() => toggle('Education')} />
+            {openSection === 'Education' && (
+              <div className="p-5 space-y-4">
+                {(resume.education || []).map((edu, i) => (
+                  <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Education #{i + 1}</span>
+                      <button onClick={() => removeEdu(i)} className="text-gray-300 hover:text-red-400"><Trash2 size={15} /></button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {[['institution','Institution'],['degree','Degree'],['field','Field of Study'],['year','Year'],['cgpa','CGPA / Percentage']].map(([f, label]) => (
+                        <div key={f}>
+                          <label className="block text-xs text-gray-500 mb-1">{label}</label>
+                          <input className={inp} value={edu[f] || ''} onChange={(e) => setEdu(i, f, e.target.value)} placeholder={label} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addEdu} className="btn-secondary w-full flex items-center justify-center gap-2 text-sm">
+                  <Plus size={15} /> Add Education
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Skills */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Skills" open={openSection === 'Skills'} onToggle={() => toggle('Skills')} />
+            {openSection === 'Skills' && (
+              <div className="p-5">
+                <label className="block text-xs font-medium text-gray-600 mb-2">Skills (comma separated)</label>
+                <input className={inp} placeholder="React, Node.js, Python, MongoDB, Figma..."
+                  value={(resume.skills || []).join(', ')}
+                  onChange={(e) => setResume({ ...resume, skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {(resume.skills || []).map((s) => (
+                    <span key={s} className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1">
+                      {s}
+                      <button onClick={() => setResume({ ...resume, skills: resume.skills.filter((sk) => sk !== s) })}><Trash2 size={10} /></button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Projects */}
+          <div className="card p-0 overflow-hidden">
+            <SectionHeader title="Projects" open={openSection === 'Projects'} onToggle={() => toggle('Projects')} />
+            {openSection === 'Projects' && (
+              <div className="p-5 space-y-4">
+                {(resume.projects || []).map((proj, i) => (
+                  <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Project #{i + 1}</span>
+                      <button onClick={() => removeProj(i)} className="text-gray-300 hover:text-red-400"><Trash2 size={15} /></button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div><label className="block text-xs text-gray-500 mb-1">Project Name</label><input className={inp} value={proj.name || ''} onChange={(e) => setProj(i, 'name', e.target.value)} /></div>
+                      <div><label className="block text-xs text-gray-500 mb-1">Live / GitHub Link</label><input className={inp} value={proj.link || ''} onChange={(e) => setProj(i, 'link', e.target.value)} /></div>
+                    </div>
+                    <div><label className="block text-xs text-gray-500 mb-1">Description</label>
+                      <textarea className={`${inp} resize-none`} rows={2} value={proj.description || ''} onChange={(e) => setProj(i, 'description', e.target.value)} /></div>
+                    <div><label className="block text-xs text-gray-500 mb-1">Tech Stack (comma separated)</label>
+                      <input className={inp} value={(proj.techStack || []).join(', ')} onChange={(e) => setProj(i, 'techStack', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} /></div>
+                  </div>
+                ))}
+                <button onClick={addProj} className="btn-secondary w-full flex items-center justify-center gap-2 text-sm">
+                  <Plus size={15} /> Add Project
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Analysis sidebar */}
+        <div className="space-y-4">
+          {analyzing && (
+            <div className="card text-center py-8">
+              <Loader size={32} className="animate-spin text-blue-500 mx-auto mb-3" />
+              <p className="text-sm font-medium text-gray-700">Analyzing your resume...</p>
+              <p className="text-xs text-slate-400 mt-1">This usually takes 10-20 seconds</p>
+            </div>
+          )}
+
+          {!analyzing && !analysis && (
+            <div className="card text-center py-8 border-dashed border-2 border-gray-200">
+              <Sparkles size={32} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-sm font-medium text-gray-600">No analysis yet</p>
+              <p className="text-xs text-slate-400 mt-1">Fill in your resume and click "AI Analyze"</p>
+            </div>
+          )}
+
+          {analysis && !analyzing && (
+            <>
+              {/* Score card */}
+              <div className="card text-center">
+                <p className="text-xs text-slate-400 uppercase font-medium mb-2">Overall Score</p>
+                <div className="relative w-24 h-24 mx-auto mb-3">
+                  <svg className="w-24 h-24 -rotate-90" viewBox="0 0 36 36">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3" />
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
+                      stroke={analysis.overallScore >= 70 ? '#22c55e' : analysis.overallScore >= 50 ? '#f59e0b' : '#ef4444'}
+                      strokeWidth="3" strokeDasharray={`${analysis.overallScore}, 100`} />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-gray-900">{analysis.overallScore}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed">{analysis.summary}</p>
+                <div className="mt-3 pt-3 border-t border-gray-50">
+                  <p className="text-xs text-slate-400 mb-1">ATS Score</p>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${analysis.atsScore}%` }} />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{analysis.atsScore}/100</p>
+                </div>
+              </div>
+
+              {/* Strengths */}
+              {analysis.strengths?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2"><CheckCircle size={15} className="text-green-500" /> Strengths</h3>
+                  <ul className="space-y-2">
+                    {analysis.strengths.map((s, i) => (
+                      <li key={i} className="text-xs text-gray-600 flex items-start gap-2"><span className="text-green-400 mt-0.5">✓</span>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Improvements */}
+              {analysis.improvements?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2"><AlertCircle size={15} className="text-orange-500" /> Improvements</h3>
+                  <ul className="space-y-2">
+                    {analysis.improvements.map((s, i) => (
+                      <li key={i} className="text-xs text-gray-600 flex items-start gap-2"><span className="text-orange-400 mt-0.5">→</span>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Missing Keywords */}
+              {analysis.missingKeywords?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Missing Keywords</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {analysis.missingKeywords.map((k) => (
+                      <span key={k} className="text-xs bg-red-50 text-red-500 px-2 py-0.5 rounded-full">{k}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ATS Tips */}
+              {analysis.atsTips?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">ATS Tips</h3>
+                  <ul className="space-y-2">
+                    {analysis.atsTips.map((t, i) => (
+                      <li key={i} className="text-xs text-gray-600 flex items-start gap-2"><span className="text-blue-400 mt-0.5">•</span>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-400 text-center">
+                Analyzed {new Date(analysis.analyzedAt).toLocaleString()}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
+

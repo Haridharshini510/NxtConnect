@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ShieldCheck, LockKeyhole } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -23,48 +24,70 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="text-2xl font-bold text-blue-600">NextConnect</Link>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">Welcome back</h2>
-          <p className="text-gray-500 text-sm mt-1">Log in to your account</p>
+    <div className="min-h-screen bg-slate-50 px-4 py-8 flex items-center justify-center">
+      <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-6">
+        <div className="card hidden lg:flex flex-col justify-between">
+          <div>
+            <Link to="/" className="inline-flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+              <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
+            </Link>
+            <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Secure access to your career workspace.</h1>
+            <p className="text-slate-600 mt-4 text-sm leading-relaxed">
+              Continue with mentorship, AI analysis, referral workflows, and application tracking in one reliable platform.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <div className="status-chip-neutral w-fit"><ShieldCheck size={13} /> Protected session handling</div>
+            <div className="status-chip-neutral w-fit"><LockKeyhole size={13} /> Role-based access controls</div>
+          </div>
         </div>
 
-        <div className="card">
+        <div className="card max-w-md w-full mx-auto">
+          <div className="mb-6">
+            <Link to="/" className="inline-flex items-center gap-2 lg:hidden mb-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+              <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
+            </Link>
+            <h2 className="text-2xl font-semibold text-slate-900">Welcome back</h2>
+            <p className="text-slate-500 text-sm mt-1">Sign in to continue your progress.</p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
               <input
                 type="email"
                 className="input"
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+                autoComplete="email"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
               <input
                 type="password"
                 className="input"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
+                autoComplete="current-password"
                 required
               />
             </div>
-            <button type="submit" className="btn-primary w-full py-2.5" disabled={loading}>
-              {loading ? 'Logging in...' : 'Log in'}
+            <button type="submit" className="btn-primary w-full" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
-        </div>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline font-medium">Sign up</Link>
-        </p>
+          <p className="text-center text-sm text-slate-500 mt-5">
+            New to NxtConnect?{' '}
+            <Link to="/register" className="text-blue-700 hover:underline font-semibold">Create account</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

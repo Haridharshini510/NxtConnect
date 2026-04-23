@@ -1,74 +1,137 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Map, Briefcase, MessageSquare } from 'lucide-react';
+import { ArrowRight, Briefcase, ClipboardList, Gift, MessageSquare, ShieldCheck, Sparkles, UserCheck } from 'lucide-react';
 
-const features = [
-  { icon: Users, title: 'Mentor Matching', desc: 'Get paired with alumni and professionals in your target industry.' },
-  { icon: Map, title: 'Career Roadmaps', desc: 'Step-by-step paths for every role — from beginner to hired.' },
-  { icon: Briefcase, title: 'Job Board', desc: 'Discover opportunities with built-in referrals from your mentor network.' },
-  { icon: MessageSquare, title: 'Real-time Chat', desc: '1-on-1 conversations with your mentor, whenever you need guidance.' },
+const pillars = [
+  {
+    icon: UserCheck,
+    title: 'Mentorship You Can Trust',
+    desc: 'Connect students with vetted mentors and keep every interaction structured and accountable.',
+  },
+  {
+    icon: Sparkles,
+    title: 'AI-Assisted Career Decisions',
+    desc: 'Use AI mentor matching and resume analysis to prioritize high-impact steps in your journey.',
+  },
+  {
+    icon: Gift,
+    title: 'Referral Workflow',
+    desc: 'Request, review, and track referrals with clear statuses and communication history.',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Application Tracking',
+    desc: 'Manage applications across stages with kanban visibility and fast updates.',
+  },
+];
+
+const modules = [
+  'Auth and role-based onboarding',
+  'Dashboard and recent activity',
+  'Mentor discovery and AI matching',
+  'Connections and real-time chat',
+  'Jobs and referral-ready opportunities',
+  'Roadmaps and workshop lifecycle',
+  'Feed and notifications',
+  'Resume builder with AI analysis',
+  'Application tracker (kanban)',
+  'Admin moderation and platform stats',
 ];
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-        <span className="text-2xl font-bold text-blue-600">NextConnect</span>
-        <div className="flex gap-3">
-          <Link to="/login" className="btn-secondary text-sm">Log in</Link>
-          <Link to="/register" className="btn-primary text-sm">Sign up free</Link>
+    <div className="min-h-screen bg-slate-50">
+      <header className="border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+            <div>
+              <div className="text-sm font-semibold text-slate-900">NxtConnect</div>
+              <div className="text-xs text-slate-500">Mentorship and Career Platform</div>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/login" className="btn-secondary text-sm">Log in</Link>
+            <Link to="/register" className="btn-primary text-sm">Create account</Link>
+          </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="text-center px-6 py-24 max-w-4xl mx-auto">
-        <span className="inline-block mb-4 text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full tracking-wide uppercase">
-          For Students & Graduates
-        </span>
-        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-          Bridge the gap between<br />
-          <span className="text-blue-600">college and career</span>
-        </h1>
-        <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
-          Connect with mentors who've been in your shoes. Get real guidance, referrals, and a clear path forward.
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <Link to="/register" className="btn-primary flex items-center gap-2 text-base px-6 py-3">
-            Get started free <ArrowRight size={18} />
-          </Link>
-          <Link to="/login" className="text-gray-500 hover:text-blue-600 text-sm transition-colors">
-            Already have an account?
-          </Link>
-        </div>
-      </section>
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <div className="status-chip-neutral mb-5 w-fit">
+              <ShieldCheck size={14} />
+              <span>Built for students, mentors, and admins</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-slate-900">
+              A reliable operating system for career growth.
+            </h1>
+            <p className="mt-5 text-base md:text-lg text-slate-600 max-w-xl leading-relaxed">
+              NxtConnect combines mentorship, AI guidance, referrals, and application tracking into one secure workflow.
+              Move from exploration to outcomes with confidence.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link to="/register" className="btn-primary">
+                Get started
+                <ArrowRight size={16} />
+              </Link>
+              <Link to="/login" className="btn-secondary">Access existing account</Link>
+            </div>
+          </div>
 
-      {/* Features */}
-      <section className="bg-gray-50 py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Everything you need to launch your career</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="card text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Icon size={22} className="text-blue-600" />
+          <div className="card p-0 overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
+              <h2 className="text-sm font-semibold text-slate-700">Platform Coverage</h2>
+              <p className="text-xs text-slate-500 mt-1">Core workflows included in one system</p>
+            </div>
+            <div className="p-5 grid sm:grid-cols-2 gap-3">
+              {modules.map((item) => (
+                <div key={item} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  {item}
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-500">{desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 px-6 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to find your mentor?</h2>
-        <p className="text-gray-500 mb-8">Join students already navigating their careers with NextConnect.</p>
-        <Link to="/register" className="btn-primary text-base px-8 py-3 inline-block">Create your free account</Link>
+      <section className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {pillars.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="card">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center mb-4">
+                <Icon size={19} />
+              </div>
+              <h3 className="font-semibold text-slate-900">{title}</h3>
+              <p className="text-sm text-slate-600 mt-2 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      <footer className="text-center py-6 text-sm text-gray-400 border-t border-gray-100">
-        © {new Date().getFullYear()} NextConnect. Built for students, by students.
+      <section className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="card bg-slate-900 text-slate-100 !border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h2 className="text-2xl font-semibold">Ready to run your career journey with structure?</h2>
+              <p className="text-sm text-slate-300 mt-2">
+                Join NxtConnect to get mentor guidance, referral workflows, AI insights, and application discipline in one place.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link to="/register" className="btn-primary bg-blue-600 hover:bg-blue-700">Start free</Link>
+              <Link to="/login" className="btn-secondary bg-white text-slate-900 border-slate-300">Log in</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="text-center py-6 text-sm text-slate-500 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-2">
+          <Briefcase size={15} />
+          <MessageSquare size={15} />
+          <span>{new Date().getFullYear()} NxtConnect</span>
+        </div>
       </footer>
     </div>
   );

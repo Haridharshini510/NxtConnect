@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NextConnect">
+  <rect width="512" height="512" rx="110" fill="#0f172a" />
+  <circle cx="154" cy="170" r="38" fill="#38bdf8" />
+  <circle cx="358" cy="170" r="38" fill="#22c55e" />
+  <circle cx="154" cy="342" r="38" fill="#f59e0b" />
+  <circle cx="358" cy="342" r="38" fill="#a78bfa" />
+  <path d="M190 170h132M154 208v96m204-96v96M190 342h132" stroke="#e2e8f0" stroke-width="24" stroke-linecap="round" />
+  <text x="256" y="474" font-family="Arial, sans-serif" font-size="56" font-weight="700" text-anchor="middle" fill="#e2e8f0">NC</text>
+</svg>

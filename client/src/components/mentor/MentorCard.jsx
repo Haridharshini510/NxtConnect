@@ -1,83 +1,95 @@
 import { Link } from 'react-router-dom';
-import { Star, Building2, Briefcase, Users } from 'lucide-react';
+import { Star, Briefcase, Users } from 'lucide-react';
+import { Card, Badge, Avatar } from '../ui';
 
+/**
+ * REFACTORED MENTOR CARD
+ * Uses design system components for consistency
+ */
 export default function MentorCard({ mentor, matchScore }) {
   const user = mentor.userId || mentor;
   const profile = mentor.mentorProfile || (mentor.userId ? mentor : null);
 
   return (
-    <div className="card hover:shadow-md transition-shadow flex flex-col gap-4">
-      {/* Header */}
-      <div className="flex items-start gap-3">
-        {user.profilePhoto ? (
-          <img src={user.profilePhoto} className="w-14 h-14 rounded-full object-cover flex-shrink-0" alt={user.name} />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <span className="text-blue-600 text-xl font-bold">{user.name?.[0]}</span>
+    <Link to={`/mentors/${user._id}`}>
+      <Card className="h-full hover:shadow-lg transition-all cursor-pointer group">
+        <Card.Body className="flex flex-col gap-4 h-full">
+          {/* Header with Avatar and Match Score */}
+          <div className="flex items-start gap-3">
+            <Avatar
+              src={user.profilePhoto}
+              initials={user.name?.[0]}
+              size="lg"
+            />
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-slate-900 group-hover:text-primary-600 transition-colors">
+                {user.name}
+              </h3>
+              {profile && (
+                <p className="text-sm text-slate-600 truncate">
+                  {profile.jobTitle} at {profile.currentCompany}
+                </p>
+              )}
+            </div>
+            {matchScore !== undefined && (
+              <div className="flex flex-col items-center flex-shrink-0">
+                <div className="text-2xl font-bold text-primary-600">{matchScore}%</div>
+                <div className="text-xs text-slate-500 font-medium">Match</div>
+              </div>
+            )}
           </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 truncate">{user.name}</h3>
-          {profile && (
-            <p className="text-sm text-gray-500 truncate">{profile.jobTitle} at {profile.currentCompany}</p>
-          )}
+
+          {/* Industry Badge */}
           {user.industry && (
-            <span className="inline-block mt-1 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+            <Badge variant="info" size="sm">
               {user.industry}
-            </span>
+            </Badge>
           )}
-        </div>
-        {matchScore !== undefined && (
-          <div className="flex-shrink-0 text-center">
-            <div className="text-lg font-bold text-blue-600">{matchScore}%</div>
-            <div className="text-xs text-gray-400">match</div>
-          </div>
-        )}
-      </div>
 
-      {/* Bio */}
-      {user.bio && (
-        <p className="text-sm text-gray-600 line-clamp-2">{user.bio}</p>
-      )}
-
-      {/* Skills */}
-      {user.skills?.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {user.skills.slice(0, 4).map((s) => (
-            <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>
-          ))}
-          {user.skills.length > 4 && (
-            <span className="text-xs text-gray-400">+{user.skills.length - 4} more</span>
+          {/* Bio */}
+          {user.bio && (
+            <p className="text-sm text-slate-600 line-clamp-2">
+              {user.bio}
+            </p>
           )}
-        </div>
-      )}
 
-      {/* Stats row */}
-      {profile && (
-        <div className="flex items-center gap-4 text-xs text-gray-500 pt-1 border-t border-gray-50">
-          {profile.yearsOfExperience > 0 && (
-            <span className="flex items-center gap-1">
-              <Briefcase size={12} /> {profile.yearsOfExperience} yrs exp
-            </span>
+          {/* Skills */}
+          {user.skills?.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {user.skills.slice(0, 3).map((skill) => (
+                <Badge key={skill} variant="default" size="sm">
+                  {skill}
+                </Badge>
+              ))}
+              {user.skills.length > 3 && (
+                <span className="text-xs text-slate-500 font-medium">
+                  +{user.skills.length - 3}
+                </span>
+              )}
+            </div>
           )}
-          {profile.rating > 0 && (
-            <span className="flex items-center gap-1">
-              <Star size={12} className="text-yellow-400" /> {profile.rating.toFixed(1)}
-            </span>
-          )}
-          <span className="flex items-center gap-1">
-            <Users size={12} />
-            {profile.currentMenteesCount}/{profile.maxMentees} mentees
-          </span>
-        </div>
-      )}
 
-      <Link
-        to={`/mentors/${user._id}`}
-        className="btn-primary text-center text-sm mt-auto"
-      >
-        View Profile
-      </Link>
-    </div>
+          {/* Stats */}
+          {profile && (
+            <div className="flex items-center gap-3 text-xs text-slate-600 pt-3 mt-auto border-t border-slate-200">
+              <span className="flex items-center gap-1">
+                <Briefcase size={14} className="text-slate-400" />
+                {profile.yearsOfExperience}y exp
+              </span>
+              {profile.rating > 0 && (
+                <span className="flex items-center gap-1">
+                  <Star size={14} className="text-warning-500" />
+                  {profile.rating.toFixed(1)}
+                </span>
+              )}
+              <span className="flex items-center gap-1 ml-auto">
+                <Users size={14} className="text-slate-400" />
+                {profile.currentMenteesCount}/{profile.maxMentees}
+              </span>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
+    </Link>
   );
-}   
+}

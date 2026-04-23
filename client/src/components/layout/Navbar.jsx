@@ -1,16 +1,38 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, User, LayoutDashboard, Users, Briefcase, Map, MessageSquare, Rss, Calendar, ShieldCheck } from 'lucide-react';
+import {
+  LogOut,
+  User,
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Map,
+  MessageSquare,
+  Rss,
+  Calendar,
+  ShieldCheck,
+  Sparkles,
+  FileText,
+  ClipboardList,
+  Gift,
+  BellRing,
+  Lock,
+} from 'lucide-react';
 import NotificationBell from '../notifications/NotificationBell';
 
 const getNavLinks = (role) => {
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/mentors', label: 'Mentors', icon: Users },
+    { to: '/ai-matching', label: 'AI Match', icon: Sparkles },
     { to: '/connections', label: 'Connections', icon: MessageSquare },
+    { to: '/applications', label: 'Applications', icon: ClipboardList },
+    { to: '/referrals', label: 'Referrals', icon: Gift },
+    { to: '/resume', label: 'Resume', icon: FileText },
     { to: '/feed', label: 'Feed', icon: Rss },
     { to: '/workshops', label: 'Events', icon: Calendar },
     { to: '/jobs', label: 'Jobs', icon: Briefcase },
+    { to: '/notifications', label: 'Notifications', icon: BellRing },
     { to: '/roadmaps', label: 'Roadmaps', icon: Map },
   ];
   if (role === 'admin') links.push({ to: '/admin', label: 'Admin', icon: ShieldCheck });
@@ -23,29 +45,34 @@ export default function Navbar() {
   const location = useLocation();
   const navLinks = getNavLinks(user?.role);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const isActive = (to) => (to === '/dashboard' ? location.pathname === to : location.pathname.startsWith(to));
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/dashboard" className="text-xl font-bold text-blue-600 flex-shrink-0">
-            NextConnect
+        <div className="flex items-center justify-between h-16 gap-3">
+          <Link to="/dashboard" className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+            <div className="hidden sm:block">
+              <div className="text-sm font-semibold text-slate-900 leading-tight">NxtConnect</div>
+              <div className="text-[11px] text-slate-500 leading-tight">Mentorship and Career Platform</div>
+            </div>
           </Link>
 
-          {/* Desktop nav links */}
-          <div className="hidden lg:flex items-center gap-0.5 overflow-x-auto">
+          <div className="hidden lg:flex items-center gap-1 overflow-x-auto">
             {navLinks.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                  location.pathname.startsWith(to) && to !== '/dashboard'
-                    ? 'bg-blue-50 text-blue-600'
-                    : location.pathname === to
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-100'
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap ${
+                  isActive(to)
+                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+                    : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <Icon size={15} />
@@ -54,42 +81,44 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Right side: notification bell + user */}
           <div className="flex items-center gap-2">
+            <div className="hidden xl:flex status-chip-neutral">
+              <Lock size={12} />
+              <span>Secure</span>
+            </div>
             <NotificationBell />
 
             <Link
               to="/profile/edit"
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
             >
               {user?.profilePhoto ? (
                 <img src={user.profilePhoto} className="w-8 h-8 rounded-full object-cover" alt="avatar" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <User size={15} className="text-blue-600" />
+                  <User size={15} className="text-blue-700" />
                 </div>
               )}
               <span className="hidden sm:block font-medium text-sm">{user?.name?.split(' ')[0]}</span>
             </Link>
 
-            <button onClick={handleLogout} className="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Logout">
+            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg" title="Logout">
               <LogOut size={17} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile bottom nav — show first 5 links */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-1.5 z-50">
-        {navLinks.slice(0, 5).map(({ to, label, icon: Icon }) => (
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 flex overflow-x-auto py-1.5 z-50">
+        {navLinks.map(({ to, label, icon: Icon }) => (
           <Link
             key={to}
             to={to}
-            className={`flex flex-col items-center gap-0.5 px-2 py-1 text-xs ${
-              location.pathname === to ? 'text-blue-600' : 'text-gray-500'
+            className={`flex min-w-[84px] flex-col items-center gap-0.5 px-2 py-1.5 text-[11px] ${
+              isActive(to) ? 'text-blue-700' : 'text-slate-500'
             }`}
           >
-            <Icon size={19} />
+            <Icon size={18} />
             {label}
           </Link>
         ))}

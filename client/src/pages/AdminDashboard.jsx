@@ -91,17 +91,20 @@ export default function AdminDashboard() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
-      <div className="flex items-center gap-3 mb-6">
-        <ShieldCheck size={24} className="text-blue-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div className="mb-6">
+        <div className="flex items-center gap-2">
+          <ShieldCheck size={22} className="text-blue-700" />
+          <h1 className="section-headline">Admin dashboard</h1>
+        </div>
+        <p className="section-subtle">Monitor users, connections, and platform health with role-safe controls.</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200">
+      <div className="flex gap-2 mb-6 border-b border-slate-200">
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+              tab === t ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}>
             {t}
           </button>
@@ -183,7 +186,7 @@ export default function AdminDashboard() {
           <div className="card p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
+                <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">User</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
@@ -193,7 +196,7 @@ export default function AdminDashboard() {
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-slate-100">
                   {users.map((u) => (
                     <tr key={u._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
@@ -242,6 +245,11 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
+                  {users.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-10 text-center text-slate-500" colSpan={6}>No users found for the current filters.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -283,7 +291,7 @@ export default function AdminDashboard() {
           <div className="card p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
+                <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Mentor</th>
@@ -291,7 +299,7 @@ export default function AdminDashboard() {
                     <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-slate-100">
                   {connections.map((c) => (
                     <tr key={c._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
@@ -314,6 +322,11 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
+                  {connections.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-10 text-center text-slate-500" colSpan={4}>No connections found for the selected status.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

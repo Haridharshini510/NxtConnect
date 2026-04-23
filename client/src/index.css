@@ -3,22 +3,138 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-muted: #f8fafc;
+    --border: #dbe3ef;
+    --border-strong: #c8d2e2;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --primary: #1d4ed8;
+    --primary-hover: #1e40af;
+    --success: #15803d;
+    --warning: #b45309;
+    --danger: #b91c1c;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 16px rgba(15, 23, 42, 0.05);
+    --shadow-hover: 0 2px 8px rgba(15, 23, 42, 0.08), 0 12px 28px rgba(15, 23, 42, 0.08);
+  }
+
+  * {
+    @apply border-gray-200;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply antialiased;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+  }
+
+  a, button, input, select, textarea {
+    @apply transition-all duration-200;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+    ring-offset-color: var(--bg);
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--primary);
+    box-shadow: 0 1px 2px rgba(29, 78, 216, 0.25);
   }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+  }
+
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-colors;
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl border;
+    background: var(--surface);
+    border-color: var(--border-strong);
+    color: #1e293b;
   }
+  .btn-secondary:hover {
+    background: var(--surface-muted);
+    border-color: #b8c5d8;
+  }
+
   .input {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply w-full rounded-xl px-3.5 py-2.5 text-sm border;
+    border-color: var(--border-strong);
+    background: #fff;
+    color: #0f172a;
   }
+  .input::placeholder {
+    color: #94a3b8;
+  }
+  .input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5;
+    @apply p-5 border;
+    background: var(--surface);
+    border-color: var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+  }
+  .card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .status-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .status-chip-neutral {
+    @apply status-chip;
+    background: #eef2ff;
+    color: #334155;
+  }
+
+  .status-chip-success {
+    @apply status-chip;
+    background: #ecfdf3;
+    color: var(--success);
+  }
+
+  .status-chip-warning {
+    @apply status-chip;
+    background: #fffbeb;
+    color: var(--warning);
+  }
+
+  .status-chip-danger {
+    @apply status-chip;
+    background: #fef2f2;
+    color: var(--danger);
+  }
+
+  .page-shell {
+    @apply min-h-[calc(100vh-4rem)] pb-20 lg:pb-0;
+  }
+
+  .section-headline {
+    @apply text-2xl md:text-[1.7rem] font-semibold text-slate-900;
+  }
+
+  .section-subtle {
+    @apply text-sm text-slate-500 mt-1;
   }
 }
