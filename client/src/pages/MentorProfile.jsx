@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { Star, Users, Briefcase, LinkedinIcon, CheckCircle, Calendar } from 'lucide-react';
+import { Star, Users, Briefcase, Linkedin, CheckCircle, Calendar } from 'lucide-react';
 
 export default function MentorProfile() {
   const { userId } = useParams();
@@ -102,7 +102,7 @@ export default function MentorProfile() {
                   ) : mentor.linkedinUrl && (
                     <a href={mentor.linkedinUrl} target="_blank" rel="noopener noreferrer"
                       className="btn-secondary flex items-center gap-1.5 text-sm">
-                      <LinkedinIcon size={14} /> LinkedIn
+                      <Linkedin size={14} /> LinkedIn
                     </a>
                   )}
                 </div>
