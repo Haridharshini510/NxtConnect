@@ -1,18 +1,28 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import React from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import FeedPost from '../components/feed/FeedPost';
+import { PostCardSkeleton } from '../components/ui';
 import toast from 'react-hot-toast';
-import { Rss, Send } from 'lucide-react';
+import { Rss, Send, BookOpen, Lightbulb, Target, Trophy, HelpCircle } from 'lucide-react';
 
 const POST_TYPES = ['story', 'tip', 'opportunity', 'achievement', 'question'];
 
 const typeLabels = {
-  story: '📖 Story',
-  tip: '💡 Tip',
-  opportunity: '🎯 Opportunity',
-  achievement: '🏆 Achievement',
-  question: '❓ Question',
+  story: 'Story',
+  tip: 'Tip',
+  opportunity: 'Opportunity',
+  achievement: 'Achievement',
+  question: 'Question',
+};
+
+const typeIcons = {
+  story: BookOpen,
+  tip: Lightbulb,
+  opportunity: Target,
+  achievement: Trophy,
+  question: HelpCircle,
 };
 
 export default function Feed() {
@@ -104,19 +114,19 @@ export default function Feed() {
   return (
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Alumni Feed</h1>
-        <p className="text-gray-500 text-sm mt-1">Stories, tips, and opportunities from the community</p>
+        <h1 className="text-2xl font-bold text-slate-900">Alumni Feed</h1>
+        <p className="text-slate-600 text-sm mt-1">Stories, tips, and opportunities from the community</p>
       </div>
 
       {/* Create post */}
       <div className="card mb-6">
         <form onSubmit={handlePost} className="space-y-3">
           <div className="flex gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
               {user?.profilePhoto ? (
                 <img src={user.profilePhoto} className="w-9 h-9 rounded-full object-cover" alt="" />
               ) : (
-                <span className="text-blue-600 font-bold">{user?.name?.[0]}</span>
+                <span className="text-primary-600 font-bold">{user?.name?.[0]}</span>
               )}
             </div>
             <textarea
@@ -137,10 +147,11 @@ export default function Feed() {
                   type="button"
                   key={t}
                   onClick={() => setPostType(t)}
-                  className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
-                    postType === t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors flex items-center gap-1 ${
+                    postType === t ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
+                  {React.createElement(typeIcons[t], { size: 12 })}
                   {typeLabels[t]}
                 </button>
               ))}
@@ -163,12 +174,13 @@ export default function Feed() {
       {/* Filter tabs */}
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         <button onClick={() => setFilterType('')}
-          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!filterType ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!filterType ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
           All
         </button>
         {POST_TYPES.map((t) => (
           <button key={t} onClick={() => setFilterType(filterType === t ? '' : t)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterType === t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex items-center gap-1 ${filterType === t ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+            {React.createElement(typeIcons[t], { size: 12 })}
             {typeLabels[t]}
           </button>
         ))}
@@ -177,10 +189,10 @@ export default function Feed() {
       {/* Posts */}
       {loading ? (
         <div className="space-y-4">
-          {[...Array(3)].map((_, i) => <div key={i} className="card h-40 animate-pulse bg-gray-100" />)}
+          {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
         </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-24 text-gray-400">
+        <div className="text-center py-24 text-slate-500">
           <Rss size={48} className="mx-auto mb-4 opacity-20" />
           <p className="text-lg font-medium">Nothing here yet</p>
           <p className="text-sm mt-1">Be the first to post in the community!</p>
@@ -198,11 +210,13 @@ export default function Feed() {
           ))}
           {/* Infinite scroll trigger */}
           <div ref={loaderRef} className="py-4 text-center">
-            {loadingMore && <span className="text-sm text-gray-400">Loading more...</span>}
-            {!hasMore && posts.length > 0 && <span className="text-sm text-gray-300">You've reached the end</span>}
+            {loadingMore && <span className="text-sm text-slate-500">Loading more...</span>}
+            {!hasMore && posts.length > 0 && <span className="text-sm text-slate-400">You've reached the end</span>}
           </div>
         </div>
       )}
     </main>
   );
 }
+
+

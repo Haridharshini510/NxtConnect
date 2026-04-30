@@ -85,8 +85,8 @@ export default function Workshops() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Workshops & Events</h1>
-          <p className="text-gray-500 text-sm mt-1">Live sessions, mock interviews, and industry talks</p>
+          <h1 className="text-2xl font-bold text-slate-900">Workshops & Events</h1>
+          <p className="text-slate-600 text-sm mt-1">Live sessions, mock interviews, and industry talks</p>
         </div>
         {(user?.role === 'mentor' || user?.role === 'admin') && (
           <button onClick={() => setShowForm(!showForm)} className="btn-primary flex items-center gap-1.5 text-sm">
@@ -97,61 +97,61 @@ export default function Workshops() {
 
       {/* Create form */}
       {showForm && (
-        <div className="card mb-8 border-purple-100">
+        <div className="card mb-8 border-brand-100">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-semibold text-gray-900">Create a Workshop</h2>
-            <button onClick={() => setShowForm(false)}><X size={18} className="text-gray-400" /></button>
+            <h2 className="font-semibold text-slate-900">Create a Workshop</h2>
+            <button onClick={() => setShowForm(false)}><X size={18} className="text-slate-500" /></button>
           </div>
           <form onSubmit={handleCreate} className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Title *</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Title *</label>
               <input className="input" value={form.title} onChange={set('title')} required placeholder="e.g. Mock Interview Bootcamp" />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Description *</label>
               <textarea className="input resize-none" rows={3} value={form.description} onChange={set('description')} required />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Type</label>
               <select className="input" value={form.type} onChange={set('type')}>
                 <option value="live">Live</option>
                 <option value="recorded">Recorded</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Category</label>
               <select className="input" value={form.category} onChange={set('category')}>
                 <option value="">Select…</option>
                 {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Date & Time *</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Date & Time *</label>
               <input type="datetime-local" className="input" value={form.scheduledAt} onChange={set('scheduledAt')} required />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Duration (minutes)</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Duration (minutes)</label>
               <input type="number" className="input" value={form.durationMinutes} onChange={set('durationMinutes')} min="15" max="480" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Meeting Link</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Meeting Link</label>
               <input className="input" placeholder="https://meet.google.com/..." value={form.meetingLink} onChange={set('meetingLink')} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Max Capacity</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Max Capacity</label>
               <input type="number" className="input" value={form.maxCapacity} onChange={set('maxCapacity')} min="1" />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Tags (comma separated)</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Tags (comma separated)</label>
               <input className="input" placeholder="React, Backend, Interview Tips" value={form.tags} onChange={set('tags')} />
             </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="isPaid" checked={form.isPaid} onChange={set('isPaid')} className="rounded" />
-              <label htmlFor="isPaid" className="text-sm text-gray-700">Paid workshop</label>
+              <label htmlFor="isPaid" className="text-sm text-slate-800">Paid workshop</label>
             </div>
             {form.isPaid && (
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Price (₹)</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Price (₹)</label>
                 <input type="number" className="input" value={form.price} onChange={set('price')} min="0" />
               </div>
             )}
@@ -169,7 +169,7 @@ export default function Workshops() {
         {['upcoming', 'all'].map((f) => (
           <button key={f} onClick={() => setFilter(f)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
-              filter === f ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filter === f ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}>
             {f === 'upcoming' ? '📅 Upcoming' : '🗂 All'}
           </button>
@@ -179,10 +179,18 @@ export default function Workshops() {
       {/* Grid */}
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[...Array(6)].map((_, i) => <div key={i} className="card h-64 animate-pulse bg-gray-100" />)}
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="card p-4 space-y-3">
+              <div className="h-32 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded-lg" />
+              <div className="space-y-2">
+                <div className="h-4 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded" />
+                <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-3/4" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : workshops.length === 0 ? (
-        <div className="text-center py-24 text-gray-400">
+        <div className="text-center py-24 text-slate-500">
           <Calendar size={48} className="mx-auto mb-4 opacity-20" />
           <p className="text-lg font-medium">No workshops yet</p>
           <p className="text-sm mt-1">{user?.role === 'mentor' ? 'Host your first workshop above.' : 'Check back soon!'}</p>
@@ -203,3 +211,5 @@ export default function Workshops() {
     </main>
   );
 }
+
+

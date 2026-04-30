@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
   if (loading) return (
     <div className="flex h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-3 text-gray-400">
+      <div className="flex flex-col items-center gap-3 text-slate-500">
         <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
         <span className="text-sm">Loading...</span>
       </div>
@@ -51,7 +51,6 @@ const ProtectedRoute = ({ children, roles }) => {
 const ROUTE_LABELS = {
   dashboard: 'Dashboard',
   mentors: 'Mentors',
-  'ai-matching': 'AI Match',
   connections: 'Connections',
   chat: 'Chat',
   jobs: 'Jobs',
@@ -105,7 +104,7 @@ const Layout = ({ children }) => {
                       {crumb.isLast ? (
                         <span className="font-semibold text-slate-700">{crumb.label}</span>
                       ) : (
-                        <Link to={crumb.to} className="hover:text-blue-700">{crumb.label}</Link>
+                        <Link to={crumb.to} className="hover:text-primary-700">{crumb.label}</Link>
                       )}
                       {idx < crumbs.length - 1 && <ChevronRight size={14} className="text-slate-400" />}
                     </div>
@@ -170,7 +169,6 @@ const AppRoutes = () => {
         <Route path="/applications" element={<ProtectedRoute><Layout><ApplicationTracker /></Layout></ProtectedRoute>} />
         <Route path="/referrals" element={<ProtectedRoute><Layout><Referrals /></Layout></ProtectedRoute>} />
         <Route path="/resume" element={<ProtectedRoute><Layout><ResumeBuilder /></Layout></ProtectedRoute>} />
-        <Route path="/ai-matching" element={<ProtectedRoute><Layout><MentorBrowse /></Layout></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -191,3 +189,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+

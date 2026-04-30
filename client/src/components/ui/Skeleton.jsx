@@ -1,4 +1,11 @@
-const Skeleton = ({ variant = 'text', width = '100%', height = '20px', count = 1, className = '' }) => {
+const Skeleton = ({ 
+  variant = 'text', 
+  width = '100%', 
+  height = '20px', 
+  count = 1, 
+  className = '' 
+}) => {
+
   const variants = {
     text: 'rounded',
     circle: 'rounded-full',
@@ -12,11 +19,12 @@ const Skeleton = ({ variant = 'text', width = '100%', height = '20px', count = 1
           key={i}
           className={`
             bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200
-            animate-pulse ${variants[variant]} ${className}
+            animate-shimmer ${variants[variant]} ${className}
           `}
           style={{
             width: width,
             height: height,
+            backgroundSize: '200% 100%',
           }}
         />
       ))}
@@ -25,3 +33,4 @@ const Skeleton = ({ variant = 'text', width = '100%', height = '20px', count = 1
 };
 
 export default Skeleton;
+

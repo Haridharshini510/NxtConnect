@@ -11,7 +11,6 @@ import {
   Rss,
   Calendar,
   Briefcase,
-  BellRing,
   Map,
   ShieldCheck,
   LogOut,
@@ -20,12 +19,12 @@ import {
 } from 'lucide-react';
 import Avatar from '../ui/Avatar';
 import { useState } from 'react';
+import logo from '../../assets/logo.png';
 
 const getNavLinks = (role) => {
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/mentors', label: 'Mentors', icon: Users },
-    { to: '/ai-matching', label: 'AI Match', icon: Sparkles },
     { to: '/connections', label: 'Connections', icon: MessageSquare },
     { to: '/applications', label: 'Applications', icon: ClipboardList },
     { to: '/referrals', label: 'Referrals', icon: Gift },
@@ -33,7 +32,6 @@ const getNavLinks = (role) => {
     { to: '/feed', label: 'Feed', icon: Rss },
     { to: '/workshops', label: 'Events', icon: Calendar },
     { to: '/jobs', label: 'Jobs', icon: Briefcase },
-    { to: '/notifications', label: 'Notifications', icon: BellRing },
     { to: '/roadmaps', label: 'Roadmaps', icon: Map },
   ];
   if (role === 'admin') {
@@ -77,9 +75,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           to="/dashboard"
           className="flex items-center gap-3 px-4 py-4 border-b border-slate-200 hover:bg-slate-50 transition-colors"
         >
-          <div className="w-8 h-8 rounded-lg bg-primary-600 text-white font-bold flex items-center justify-center text-sm">
-            NC
-          </div>
+          <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
           <div className="hidden sm:block">
             <div className="text-sm font-bold text-slate-900">NxtConnect</div>
             <div className="text-xs text-slate-500">Mentorship Platform</div>

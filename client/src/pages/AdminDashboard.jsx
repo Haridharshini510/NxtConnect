@@ -77,12 +77,12 @@ export default function AdminDashboard() {
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const statCards = stats ? [
-    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Students', value: stats.totalStudents, icon: Users, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-primary-600 bg-primary-50' },
+    { label: 'Students', value: stats.totalStudents, icon: Users, color: 'text-brand-600 bg-brand-50' },
     { label: 'Mentors', value: stats.totalMentors, icon: ShieldCheck, color: 'text-green-600 bg-green-50' },
     { label: 'Active Connections', value: stats.activeConnections, icon: Link2, color: 'text-orange-600 bg-orange-50' },
     { label: 'Jobs Posted', value: stats.totalJobs, icon: Briefcase, color: 'text-red-600 bg-red-50' },
-    { label: 'Workshops', value: stats.totalWorkshops, icon: Calendar, color: 'text-indigo-600 bg-indigo-50' },
+    { label: 'Workshops', value: stats.totalWorkshops, icon: Calendar, color: 'text-brand-600 bg-brand-50' },
     { label: 'Feed Posts', value: stats.totalPosts, icon: Rss, color: 'text-pink-600 bg-pink-50' },
     { label: 'New This Month', value: stats.newUsersThisMonth, icon: TrendingUp, color: 'text-teal-600 bg-teal-50' },
   ] : [];
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={22} className="text-blue-700" />
+          <ShieldCheck size={22} className="text-primary-700" />
           <h1 className="section-headline">Admin dashboard</h1>
         </div>
         <p className="section-subtle">Monitor users, connections, and platform health with role-safe controls.</p>
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              tab === t ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'
+              tab === t ? 'border-blue-700 text-primary-700' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}>
             {t}
           </button>
@@ -116,7 +116,12 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           {loading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[...Array(8)].map((_, i) => <div key={i} className="card h-24 animate-pulse bg-gray-100" />)}
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="card p-3 space-y-2">
+                  <div className="h-4 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded" />
+                  <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-2/3" />
+                </div>
+              ))}
             </div>
           ) : (
             <>
@@ -128,8 +133,8 @@ export default function AdminDashboard() {
                       <Icon size={20} />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{value?.toLocaleString()}</div>
-                      <div className="text-xs text-gray-500">{label}</div>
+                      <div className="text-2xl font-bold text-slate-900">{value?.toLocaleString()}</div>
+                      <div className="text-xs text-slate-600">{label}</div>
                     </div>
                   </div>
                 ))}
@@ -138,16 +143,16 @@ export default function AdminDashboard() {
               {/* User growth chart */}
               {userGrowth.length > 0 && (
                 <div className="card">
-                  <h2 className="font-semibold text-gray-900 mb-4">User Growth (Last 6 Months)</h2>
+                  <h2 className="font-semibold text-slate-900 mb-4">User Growth (Last 6 Months)</h2>
                   <div className="flex items-end gap-3 h-36">
                     {userGrowth.map((g) => (
                       <div key={`${g._id.year}-${g._id.month}`} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-xs text-gray-500 font-medium">{g.count}</span>
+                        <span className="text-xs text-slate-600 font-medium">{g.count}</span>
                         <div
-                          className="w-full bg-blue-500 rounded-t-md transition-all hover:bg-blue-600"
+                          className="w-full bg-primary-500 rounded-t-md transition-all hover:bg-primary-600"
                           style={{ height: `${Math.max((g.count / maxGrowth) * 100, 8)}%` }}
                         />
-                        <span className="text-xs text-gray-400">{MONTHS[g._id.month - 1]}</span>
+                        <span className="text-xs text-slate-500">{MONTHS[g._id.month - 1]}</span>
                       </div>
                     ))}
                   </div>
@@ -164,7 +169,7 @@ export default function AdminDashboard() {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <form onSubmit={handleSearch} className="relative flex-1">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
               <input className="input pl-9 text-sm" placeholder="Search by name, email, college..."
                 value={userSearch} onChange={(e) => setUserSearch(e.target.value)} />
             </form>
@@ -172,7 +177,7 @@ export default function AdminDashboard() {
               {['', 'student', 'mentor', 'admin'].map((r) => (
                 <button key={r} onClick={() => setRoleFilter(r)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
-                    roleFilter === r ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    roleFilter === r ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}>
                   {r || 'All'}
                 </button>
@@ -180,7 +185,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <p className="text-sm text-gray-500">{userTotal} users found</p>
+          <p className="text-sm text-slate-600">{userTotal} users found</p>
 
           {/* Table */}
           <div className="card p-0 overflow-hidden">
@@ -188,42 +193,42 @@ export default function AdminDashboard() {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">User</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">College</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Joined</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Actions</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">User</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Role</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700 hidden md:table-cell">College</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700 hidden lg:table-cell">Joined</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Status</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {users.map((u) => (
-                    <tr key={u._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={u._id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                             {u.profilePhoto ? (
                               <img src={u.profilePhoto} className="w-8 h-8 rounded-full object-cover" alt="" />
                             ) : (
-                              <span className="text-blue-600 text-xs font-bold">{u.name?.[0]}</span>
+                              <span className="text-primary-600 text-xs font-bold">{u.name?.[0]}</span>
                             )}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-900">{u.name}</div>
-                            <div className="text-xs text-gray-400">{u.email}</div>
+                            <div className="font-medium text-slate-900">{u.name}</div>
+                            <div className="text-xs text-slate-500">{u.email}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <select value={u.role} onChange={(e) => changeRole(u._id, e.target.value)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 capitalize">
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-primary-500 capitalize">
                           <option value="student">Student</option>
                           <option value="mentor">Mentor</option>
                           <option value="admin">Admin</option>
                         </select>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 hidden md:table-cell text-xs">{u.college || '—'}</td>
-                      <td className="px-4 py-3 text-gray-400 hidden lg:table-cell text-xs">
+                      <td className="px-4 py-3 text-slate-600 hidden md:table-cell text-xs">{u.college || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 hidden lg:table-cell text-xs">
                         {new Date(u.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
@@ -257,7 +262,7 @@ export default function AdminDashboard() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Page {userPage} of {Math.ceil(userTotal / 15)}</span>
+            <span className="text-slate-600">Page {userPage} of {Math.ceil(userTotal / 15)}</span>
             <div className="flex gap-2">
               <button onClick={() => fetchUsers(userPage - 1)} disabled={userPage === 1}
                 className="btn-secondary px-3 py-1.5 text-xs disabled:opacity-40 flex items-center gap-1">
@@ -279,45 +284,45 @@ export default function AdminDashboard() {
             {['', 'pending', 'active', 'declined', 'closed'].map((s) => (
               <button key={s} onClick={() => setStatusFilter(s)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
-                  statusFilter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  statusFilter === s ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}>
                 {s || 'All'}
               </button>
             ))}
           </div>
 
-          <p className="text-sm text-gray-500">{connTotal} connections</p>
+          <p className="text-sm text-slate-600">{connTotal} connections</p>
 
           <div className="card p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Student</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Mentor</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Date</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Student</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Mentor</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700">Status</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-700 hidden md:table-cell">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {connections.map((c) => (
-                    <tr key={c._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={c._id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{c.studentId?.name}</div>
-                        <div className="text-xs text-gray-400">{c.studentId?.college}</div>
+                        <div className="font-medium text-slate-900">{c.studentId?.name}</div>
+                        <div className="text-xs text-slate-500">{c.studentId?.college}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{c.mentorId?.name}</div>
-                        <div className="text-xs text-gray-400">{c.mentorId?.industry}</div>
+                        <div className="font-medium text-slate-900">{c.mentorId?.name}</div>
+                        <div className="text-xs text-slate-500">{c.mentorId?.industry}</div>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                           c.status === 'active' ? 'bg-green-50 text-green-600' :
                           c.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
-                          'bg-gray-100 text-gray-500'
+                          'bg-slate-100 text-slate-600'
                         }`}>{c.status}</span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-400 hidden md:table-cell">
+                      <td className="px-4 py-3 text-xs text-slate-500 hidden md:table-cell">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
                     </tr>
@@ -333,7 +338,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Page {connPage} of {Math.ceil(connTotal / 15)}</span>
+            <span className="text-slate-600">Page {connPage} of {Math.ceil(connTotal / 15)}</span>
             <div className="flex gap-2">
               <button onClick={() => fetchConnections(connPage - 1)} disabled={connPage === 1}
                 className="btn-secondary px-3 py-1.5 text-xs disabled:opacity-40 flex items-center gap-1">
@@ -350,3 +355,6 @@ export default function AdminDashboard() {
     </main>
   );
 }
+
+
+

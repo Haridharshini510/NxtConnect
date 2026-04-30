@@ -6,31 +6,31 @@
 @layer base {
   :root {
     /* Colors */
-    --color-primary: #1e3a8a;
-    --color-primary-light: #3b82f6;
-    --color-primary-dark: #172554;
+    --color-primary: #0987f7;
+    --color-primary-light: #5969ab;
+    --color-primary-dark: #082051;
     --color-success: #16a34a;
     --color-warning: #f59e0b;
     --color-error: #dc2626;
-    --color-info: #3b82f6;
+    --color-info: #0987f7;
 
     /* Backgrounds */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-muted: #f1f5f9;
+    --bg-secondary: #f3f6fc;
+    --bg-muted: #e9edf6;
     --bg-overlay: rgba(15, 23, 42, 0.4);
 
     /* Text Colors */
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-tertiary: #64748b;
-    --text-disabled: #cbd5e1;
+    --text-primary: #082051;
+    --text-secondary: #656c79;
+    --text-tertiary: #7b8cb0;
+    --text-disabled: #a7b4cc;
     --text-inverse: #ffffff;
 
     /* Borders */
-    --border-subtle: #e2e8f0;
-    --border-default: #cbd5e1;
-    --border-strong: #94a3b8;
+    --border-subtle: #d3dae8;
+    --border-default: #bdc7da;
+    --border-strong: #a7b4cc;
 
     /* Shadows */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -63,43 +63,49 @@
     @apply antialiased text-base;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Merriweather', 'Segoe UI', system-ui, -apple-system, serif;
     line-height: 1.5;
   }
 
   /* Typography Hierarchy */
   h1 {
-    @apply text-5xl font-bold leading-tight tracking-tight;
+    @apply text-4xl font-medium leading-tight tracking-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   h2 {
-    @apply text-4xl font-bold leading-tight tracking-tight;
+    @apply text-3xl font-medium leading-tight tracking-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   h3 {
-    @apply text-3xl font-bold leading-tight tracking-tight;
+    @apply text-2xl font-medium leading-tight tracking-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   h4 {
     @apply text-2xl font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   h5 {
     @apply text-xl font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   h6 {
     @apply text-lg font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--text-primary);
   }
 
   p {
-    @apply text-base text-slate-700;
+    @apply text-base text-slate-700 leading-tight;
   }
 
   label {
@@ -107,7 +113,7 @@
   }
 
   small {
-    @apply text-xs text-slate-500;
+    @apply text-xs text-slate-700;
   }
 
   /* Links */
@@ -115,6 +121,10 @@
     @apply text-primary-600 no-underline transition-colors hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
   }
 
+  
+  a, button, input, select, textarea {
+    font-family: inherit;
+  }
   /* Focus Rings */
   button:focus-visible,
   input:focus-visible,
@@ -195,27 +205,33 @@
 
   /* ===== Typography Utilities ===== */
   .text-h1 {
-    @apply text-5xl font-bold leading-tight tracking-tight;
+    @apply text-4xl font-medium leading-tight tracking-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-h2 {
-    @apply text-4xl font-bold leading-tight tracking-tight;
+    @apply text-3xl font-medium leading-tight tracking-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-h3 {
-    @apply text-3xl font-bold leading-tight;
+    @apply text-2xl font-medium leading-tight;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-h4 {
     @apply text-2xl font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-h5 {
     @apply text-xl font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-h6 {
     @apply text-lg font-semibold leading-snug;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   .text-body {
@@ -351,3 +367,6 @@
     @apply flex-1 overflow-auto;
   }
 }
+
+
+

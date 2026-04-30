@@ -108,7 +108,7 @@ export default function Referrals() {
           {connections.length === 0 ? (
             <div className="text-center py-8 text-sm text-slate-500">
               You need an active mentorship connection first.
-              <a href="/mentors" className="text-blue-700 hover:underline ml-1">Browse mentors</a>
+              <a href="/mentors" className="text-primary-700 hover:underline ml-1">Browse mentors</a>
             </div>
           ) : (
             <form onSubmit={handleRequest} className="space-y-4">
@@ -156,7 +156,15 @@ export default function Referrals() {
       )}
 
       {loading ? (
-        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="card h-32 animate-pulse bg-slate-100" />)}</div>
+        <div className="space-y-3">{[...Array(3)].map((_, i) => (
+          <div key={i} className="card p-4 space-y-2">
+            <div className="h-4 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-3/4" />
+            <div className="space-y-1">
+              <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded" />
+              <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-2/3" />
+            </div>
+          </div>
+        ))}</div>
       ) : referrals.length === 0 ? (
         <div className="card text-center py-16">
           <Gift size={40} className="mx-auto mb-3 text-slate-300" />
@@ -178,11 +186,11 @@ export default function Referrals() {
             return (
               <div key={ref._id} className="card">
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                  <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-11 h-11 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                     {other?.profilePhoto ? (
                       <img src={other.profilePhoto} className="w-11 h-11 rounded-full object-cover" alt="" />
                     ) : (
-                      <span className="text-blue-700 font-bold">{other?.name?.[0]}</span>
+                      <span className="text-primary-700 font-bold">{other?.name?.[0]}</span>
                     )}
                   </div>
 
@@ -194,10 +202,10 @@ export default function Referrals() {
                       </span>
                     </div>
                     <p className="text-sm text-slate-800 font-medium">
-                      {ref.jobTitle} at <span className="text-blue-700">{ref.company}</span>
+                      {ref.jobTitle} at <span className="text-primary-700">{ref.company}</span>
                     </p>
                     {ref.jobUrl && (
-                      <a href={ref.jobUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 hover:text-blue-700 inline-flex items-center gap-1 mt-1">
+                      <a href={ref.jobUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 hover:text-primary-700 inline-flex items-center gap-1 mt-1">
                         <ExternalLink size={11} /> View job posting
                       </a>
                     )}
@@ -246,3 +254,4 @@ export default function Referrals() {
     </main>
   );
 }
+

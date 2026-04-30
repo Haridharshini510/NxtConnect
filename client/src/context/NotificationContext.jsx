@@ -11,13 +11,16 @@ export const NotificationProvider = ({ children }) => {
   const { socket } = useSocket();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchNotifications = useCallback(async () => {
     try {
+      setLoading(true);
       const { data } = await notificationAPI.getAll();
       setNotifications(data.notifications);
       setUnreadCount(data.unreadCount);
     } catch {}
+    finally { setLoading(false); }
   }, []);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export const NotificationProvider = ({ children }) => {
 
   return (
     <NotificationContext.Provider
-      value={{ unreadCount, notifications, fetchNotifications, markRead, markAllRead, deleteNotification }}
+      value={{ unreadCount, notifications, loading, fetchNotifications, markRead, markAllRead, deleteNotification }}
     >
       {children}
     </NotificationContext.Provider>

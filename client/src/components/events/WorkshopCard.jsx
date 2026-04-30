@@ -13,13 +13,13 @@ export default function WorkshopCard({ workshop, onRegister, onUnregister, isReg
         <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${
           workshop.type === 'live'
             ? 'bg-red-50 text-red-600'
-            : 'bg-purple-50 text-purple-600'
+            : 'bg-brand-50 text-brand-600'
         }`}>
           {workshop.type === 'live' ? <Video size={11} /> : <PlayCircle size={11} />}
           {workshop.type === 'live' ? 'Live Session' : 'Recorded'}
         </span>
         {workshop.isPaid && workshop.price > 0 ? (
-          <span className="text-sm font-bold text-gray-800">₹{workshop.price}</span>
+          <span className="text-sm font-bold text-slate-900">₹{workshop.price}</span>
         ) : (
           <span className="text-xs text-green-600 font-medium">Free</span>
         )}
@@ -27,25 +27,25 @@ export default function WorkshopCard({ workshop, onRegister, onUnregister, isReg
 
       {/* Title & host */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-base leading-snug">{workshop.title}</h3>
+        <h3 className="font-semibold text-slate-900 text-base leading-snug">{workshop.title}</h3>
         {host && (
           <div className="flex items-center gap-2 mt-2">
             {host.profilePhoto ? (
               <img src={host.profilePhoto} className="w-6 h-6 rounded-full object-cover" alt={host.name} />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 text-xs font-bold">{host.name?.[0]}</span>
+              <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center">
+                <span className="text-primary-600 text-xs font-bold">{host.name?.[0]}</span>
               </div>
             )}
-            <span className="text-sm text-gray-500">{host.name}</span>
+            <span className="text-sm text-slate-600">{host.name}</span>
           </div>
         )}
       </div>
 
-      <p className="text-sm text-gray-600 line-clamp-2">{workshop.description}</p>
+      <p className="text-sm text-slate-700 line-clamp-2">{workshop.description}</p>
 
       {/* Meta */}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+      <div className="flex flex-wrap gap-3 text-xs text-slate-600">
         <span className="flex items-center gap-1">
           <Calendar size={12} />
           {new Date(workshop.scheduledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -65,7 +65,7 @@ export default function WorkshopCard({ workshop, onRegister, onUnregister, isReg
       {workshop.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {workshop.tags.slice(0, 3).map((t) => (
-            <span key={t} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t}</span>
+            <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t}</span>
           ))}
         </div>
       )}
@@ -98,3 +98,5 @@ export default function WorkshopCard({ workshop, onRegister, onUnregister, isReg
     </div>
   );
 }
+
+

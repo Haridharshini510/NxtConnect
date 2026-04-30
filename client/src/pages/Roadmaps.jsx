@@ -15,15 +15,23 @@ export default function Roadmaps() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Career Roadmaps</h1>
-      <p className="text-gray-500 text-sm mb-8">Step-by-step paths curated by industry mentors</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-2">Career Roadmaps</h1>
+      <p className="text-slate-600 text-sm mb-8">Step-by-step paths curated by industry mentors</p>
 
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[...Array(4)].map((_, i) => <div key={i} className="card h-40 animate-pulse bg-gray-100" />)}
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="card p-4 space-y-3">
+              <div className="h-4 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-3/4" />
+              <div className="space-y-2">
+                <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded" />
+                <div className="h-3 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-shimmer rounded w-2/3" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : roadmaps.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
+        <div className="text-center py-20 text-slate-500">
           <Map size={48} className="mx-auto mb-4 opacity-30" />
           <p>No roadmaps published yet. Check back soon!</p>
         </div>
@@ -31,15 +39,15 @@ export default function Roadmaps() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {roadmaps.map((rm) => (
             <div key={rm._id} className="card hover:shadow-md transition-shadow flex flex-col gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Map size={20} className="text-purple-600" />
+              <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                <Map size={20} className="text-brand-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{rm.title}</h3>
-                <p className="text-sm text-gray-500 mt-0.5">{rm.category}</p>
+                <h3 className="font-semibold text-slate-900">{rm.title}</h3>
+                <p className="text-sm text-slate-600 mt-0.5">{rm.category}</p>
               </div>
-              {rm.description && <p className="text-sm text-gray-600 line-clamp-2">{rm.description}</p>}
-              <div className="flex items-center gap-3 text-xs text-gray-400">
+              {rm.description && <p className="text-sm text-slate-700 line-clamp-2">{rm.description}</p>}
+              <div className="flex items-center gap-3 text-xs text-slate-500">
                 <span>{rm.steps?.length || 0} steps</span>
                 {totalWeeks(rm) > 0 && (
                   <span className="flex items-center gap-1"><Clock size={11} /> ~{totalWeeks(rm)} weeks</span>
@@ -48,7 +56,7 @@ export default function Roadmaps() {
               {rm.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {rm.tags.slice(0, 3).map((t) => (
-                    <span key={t} className="text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">{t}</span>
+                    <span key={t} className="text-xs bg-brand-50 text-brand-600 px-2 py-0.5 rounded-full">{t}</span>
                   ))}
                 </div>
               )}
@@ -62,3 +70,4 @@ export default function Roadmaps() {
     </main>
   );
 }
+

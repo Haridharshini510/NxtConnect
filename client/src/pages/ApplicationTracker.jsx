@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { Plus, X, ExternalLink, Edit2, Trash2, Calendar, KanbanSquare } from 'lucide-react';
+import { ApplicationCardSkeleton } from '../components/ui';
 
 const COLUMNS = [
   { key: 'saved', label: 'Saved', color: 'border-slate-300' },
@@ -99,10 +100,14 @@ export default function ApplicationTracker() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await api.put(`/applications/${id}`, { status: newStatus });
-      fetchData();
-    } catch {
-      toast.error('Failed to update status');
+      const response = await api.put(`/applications/${id}`, { status: newStatus });
+      if (response?.data?.application) {
+        toast.success('Status updated');
+        // Refetch all data to ensure consistency
+        await fetchData();
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update status');
     }
   };
 
@@ -126,9 +131,26 @@ export default function ApplicationTracker() {
 
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.value });
 
-  const onDragStart = (app) => setDragging(app);
-  const onDrop = async (status) => {
-    if (dragging && dragging.status !== status) await handleStatusChange(dragging._id, status);
+  const onDragStart = (event, app) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', app._id);
+    setDragging(app);
+  };
+
+  const onDrop = async (event, status) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const appId = event.dataTransfer.getData('text/plain');
+    const targetApp = appId ? Object.values(grouped).flat().find((app) => app._id === appId) : dragging;
+    if (!targetApp) {
+      setDragging(null);
+      return;
+    }
+
+    if (targetApp.status !== status) {
+      await handleStatusChange(targetApp._id, status);
+    }
     setDragging(null);
   };
 
@@ -194,7 +216,13 @@ export default function ApplicationTracker() {
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => <div key={i} className="card h-60 animate-pulse bg-slate-100" />)}
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              {[...Array(3)].map((_, j) => (
+                <ApplicationCardSkeleton key={j} />
+              ))}
+            </div>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
@@ -203,7 +231,7 @@ export default function ApplicationTracker() {
               key={key}
               className={`rounded-xl border-t-4 ${color} border bg-slate-50 p-3 min-h-[260px]`}
               onDragOver={(e) => e.preventDefault()}
-              onDrop={() => onDrop(key)}
+              onDrop={(e) => onDrop(e, key)}
             >
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
@@ -215,14 +243,14 @@ export default function ApplicationTracker() {
 
               <div className="space-y-2">
                 {(grouped[key] || []).map((app) => (
-                  <div key={app._id} draggable onDragStart={() => onDragStart(app)} className="bg-white rounded-xl p-3 border border-slate-200">
+                  <div key={app._id} draggable onDragStart={(e) => onDragStart(e, app)} className="bg-white rounded-xl p-3 border border-slate-200">
                     <div className="flex items-start justify-between gap-1 mb-1">
                       <div className="min-w-0">
                         <p className="font-semibold text-slate-900 text-xs truncate">{app.company}</p>
                         <p className="text-xs text-slate-500 truncate">{app.role}</p>
                       </div>
                       <div className="flex gap-1 flex-shrink-0">
-                        <button onClick={() => openEdit(app)} className="text-slate-400 hover:text-blue-700"><Edit2 size={12} /></button>
+                        <button onClick={() => openEdit(app)} className="text-slate-400 hover:text-primary-700"><Edit2 size={12} /></button>
                         <button onClick={() => handleDelete(app._id)} className="text-slate-400 hover:text-red-600"><Trash2 size={12} /></button>
                       </div>
                     </div>
@@ -235,7 +263,7 @@ export default function ApplicationTracker() {
                     {app.appliedDate && <p className="text-xs text-slate-500 mt-2 flex items-center gap-1"><Calendar size={10} /> {new Date(app.appliedDate).toLocaleDateString()}</p>}
                     {app.salary && <p className="text-xs text-emerald-700 font-medium mt-1">{app.salary}</p>}
                     {app.jobUrl && (
-                      <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700 hover:underline flex items-center gap-0.5 mt-1">
+                      <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-700 hover:underline flex items-center gap-0.5 mt-1">
                         <ExternalLink size={10} /> View job
                       </a>
                     )}
@@ -244,7 +272,7 @@ export default function ApplicationTracker() {
                       value={app.status}
                       onChange={(e) => handleStatusChange(app._id, e.target.value)}
                       onClick={(e) => e.stopPropagation()}
-                      className="mt-2 w-full text-xs border border-slate-200 rounded-lg px-2 py-1 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="mt-2 w-full text-xs border border-slate-200 rounded-lg px-2 py-1 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary-500"
                     >
                       {['saved', 'applied', 'interview', 'offer', 'rejected', 'withdrawn'].map((s) => (
                         <option key={s} value={s}>{s}</option>
@@ -261,3 +289,4 @@ export default function ApplicationTracker() {
     </main>
   );
 }
+

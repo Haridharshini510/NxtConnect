@@ -4,42 +4,65 @@
 
 @layer base {
   :root {
-    --bg: #f5f7fb;
-    --surface: #ffffff;
-    --surface-muted: #f8fafc;
-    --border: #dbe3ef;
-    --border-strong: #c8d2e2;
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --primary: #1d4ed8;
-    --primary-hover: #1e40af;
+    --white: #ffffff;
+    --gray: #656c79;
+    --light-gray: #f3f6fc;
+    --slate-blue: #5969ab;
+    --blue: #0987f7;
+    --deep-blue: #082051;
+    --bg: var(--light-gray);
+    --surface: var(--white);
+    --surface-muted: #e9edf6;
+    --border: #d3dae8;
+    --border-strong: #a7b4cc;
+    --text: var(--deep-blue);
+    --text-muted: var(--gray);
+    --primary: var(--blue);
+    --primary-hover: #0876d9;
+    --brand: var(--slate-blue);
     --success: #15803d;
     --warning: #b45309;
     --danger: #b91c1c;
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
-    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 16px rgba(15, 23, 42, 0.05);
-    --shadow-hover: 0 2px 8px rgba(15, 23, 42, 0.08), 0 12px 28px rgba(15, 23, 42, 0.08);
+    --shadow-soft: 0 1px 2px rgba(8, 32, 81, 0.08), 0 6px 16px rgba(8, 32, 81, 0.06);
+    --shadow-hover: 0 2px 8px rgba(8, 32, 81, 0.1), 0 12px 28px rgba(8, 32, 81, 0.1);
   }
 
   * {
-    @apply border-gray-200;
+    @apply border-slate-200;
   }
 
   body {
     @apply antialiased;
     background: var(--bg);
     color: var(--text);
-    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: "Merriweather", "Segoe UI", system-ui, -apple-system, serif;
+    font-size: 16px;
+    line-height: 1.1;
   }
 
   h1, h2, h3, h4 {
     @apply tracking-tight;
+    font-family: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+
+  h1 {
+    font-size: 72px;
+    line-height: 1.1;
+    font-weight: 500;
+  }
+
+  h2 {
+    font-size: 52px;
+    line-height: 1.2;
+    font-weight: 500;
   }
 
   a, button, input, select, textarea {
     @apply transition-all duration-200;
+    font-family: inherit;
   }
 
   a:focus-visible,
@@ -47,7 +70,7 @@
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
     ring-offset-color: var(--bg);
   }
 }
@@ -56,7 +79,7 @@
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed;
     background: var(--primary);
-    box-shadow: 0 1px 2px rgba(29, 78, 216, 0.25);
+    box-shadow: 0 1px 2px rgba(9, 135, 247, 0.35);
   }
   .btn-primary:hover:not(:disabled) {
     background: var(--primary-hover);
@@ -66,7 +89,7 @@
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl border;
     background: var(--surface);
     border-color: var(--border-strong);
-    color: #1e293b;
+    color: var(--deep-blue);
   }
   .btn-secondary:hover {
     background: var(--surface-muted);
@@ -77,14 +100,14 @@
     @apply w-full rounded-xl px-3.5 py-2.5 text-sm border;
     border-color: var(--border-strong);
     background: #fff;
-    color: #0f172a;
+    color: var(--deep-blue);
   }
   .input::placeholder {
-    color: #94a3b8;
+    color: #7b8cb0;
   }
   .input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(89, 105, 171, 0.2);
   }
 
   .card {
@@ -104,8 +127,8 @@
 
   .status-chip-neutral {
     @apply status-chip;
-    background: #eef2ff;
-    color: #334155;
+    background: #eceffa;
+    color: var(--brand);
   }
 
   .status-chip-success {
@@ -132,9 +155,28 @@
 
   .section-headline {
     @apply text-2xl md:text-[1.7rem] font-semibold text-slate-900;
+    font-family: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
 
   .section-subtle {
-    @apply text-sm text-slate-500 mt-1;
+    @apply text-sm text-slate-700 mt-1;
   }
 }
+
+@layer utilities {
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+}
+
+
+

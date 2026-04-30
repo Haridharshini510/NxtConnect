@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Trash2, CheckCheck } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
+import { PageSkeleton } from '../components/ui';
 
 const typeIcons = {
   connection_request: '🤝',
@@ -16,12 +17,14 @@ const typeIcons = {
 };
 
 export default function Notifications() {
-  const { notifications, unreadCount, fetchNotifications, markRead, markAllRead, deleteNotification } = useNotifications();
+  const { notifications, unreadCount, loading, fetchNotifications, markRead, markAllRead, deleteNotification } = useNotifications();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  if (loading) return <PageSkeleton variant="notifications" />;
 
   const timeAgo = (date) => {
     const diff = Date.now() - new Date(date).getTime();
@@ -42,9 +45,9 @@ export default function Notifications() {
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20 lg:pb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
           {unreadCount > 0 && (
-            <p className="text-sm text-gray-500 mt-0.5">{unreadCount} unread</p>
+            <p className="text-sm text-slate-600 mt-0.5">{unreadCount} unread</p>
           )}
         </div>
         {unreadCount > 0 && (
@@ -55,7 +58,7 @@ export default function Notifications() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="text-center py-24 text-gray-400">
+        <div className="text-center py-24 text-slate-500">
           <Bell size={48} className="mx-auto mb-4 opacity-20" />
           <p className="text-lg font-medium">No notifications yet</p>
           <p className="text-sm mt-1">We'll let you know when something happens.</p>
@@ -67,23 +70,23 @@ export default function Notifications() {
               key={notif._id}
               onClick={() => handleClick(notif)}
               className={`card flex items-start gap-4 cursor-pointer hover:shadow-md transition-all ${
-                !notif.isRead ? 'border-l-4 border-l-blue-500 bg-blue-50/20' : ''
+                !notif.isRead ? 'border-l-4 border-l-blue-500 bg-primary-50/20' : ''
               }`}
             >
               <span className="text-2xl flex-shrink-0">{typeIcons[notif.type] || typeIcons.default}</span>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-gray-900 text-sm">{notif.title}</p>
-                  {!notif.isRead && <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />}
+                  <p className="font-semibold text-slate-900 text-sm">{notif.title}</p>
+                  {!notif.isRead && <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-1.5" />}
                 </div>
-                <p className="text-sm text-gray-600 mt-0.5">{notif.body}</p>
-                <p className="text-xs text-gray-400 mt-1.5">{timeAgo(notif.createdAt)}</p>
+                <p className="text-sm text-slate-700 mt-0.5">{notif.body}</p>
+                <p className="text-xs text-slate-500 mt-1.5">{timeAgo(notif.createdAt)}</p>
               </div>
 
               <button
                 onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
-                className="flex-shrink-0 p-1 text-gray-300 hover:text-red-400 transition-colors"
+                className="flex-shrink-0 p-1 text-slate-400 hover:text-red-400 transition-colors"
               >
                 <Trash2 size={15} />
               </button>
@@ -94,3 +97,6 @@ export default function Notifications() {
     </main>
   );
 }
+
+
+

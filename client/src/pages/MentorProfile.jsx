@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { Star, Users, Briefcase, CheckCircle, Calendar } from 'lucide-react';
+import { PageSkeleton } from '../components/ui';
 
 export default function MentorProfile() {
   const { userId } = useParams();
@@ -57,8 +58,8 @@ export default function MentorProfile() {
     }
   };
 
-  if (loading) return <div className="flex h-96 items-center justify-center text-gray-400">Loading...</div>;
-  if (!mentor) return <div className="text-center py-20 text-gray-400">Mentor not found</div>;
+  if (loading) return <PageSkeleton variant="mentorProfile" />;
+  if (!mentor) return <div className="text-center py-20 text-slate-500">Mentor not found</div>;
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
@@ -68,17 +69,17 @@ export default function MentorProfile() {
           {mentorUser?.profilePhoto ? (
             <img src={mentorUser.profilePhoto} className="w-24 h-24 rounded-full object-cover flex-shrink-0" alt={mentorUser.name} />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-4xl font-bold text-blue-600">{mentorUser?.name?.[0]}</span>
+            <div className="w-24 h-24 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-4xl font-bold text-primary-600">{mentorUser?.name?.[0]}</span>
             </div>
           )}
           <div className="flex-1">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{mentorUser?.name}</h1>
-                <p className="text-gray-500">{mentor.jobTitle} at {mentor.currentCompany}</p>
+                <h1 className="text-2xl font-bold text-slate-900">{mentorUser?.name}</h1>
+                <p className="text-slate-600">{mentor.jobTitle} at {mentor.currentCompany}</p>
                 {mentorUser?.industry && (
-                  <span className="inline-block mt-2 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{mentorUser.industry}</span>
+                  <span className="inline-block mt-2 text-xs bg-primary-50 text-primary-600 px-2 py-0.5 rounded-full">{mentorUser.industry}</span>
                 )}
               </div>
               {user?.role === 'student' && (
@@ -109,7 +110,7 @@ export default function MentorProfile() {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-4 mt-4 text-sm text-slate-600">
               <span className="flex items-center gap-1"><Briefcase size={14} /> {mentor.yearsOfExperience} yrs exp</span>
               <span className="flex items-center gap-1"><Users size={14} /> {mentor.currentMenteesCount}/{mentor.maxMentees} mentees</span>
               {mentor.rating > 0 && (
@@ -120,7 +121,7 @@ export default function MentorProfile() {
         </div>
 
         {mentorUser?.bio && (
-          <p className="mt-4 text-gray-600 text-sm leading-relaxed border-t border-gray-50 pt-4">{mentorUser.bio}</p>
+          <p className="mt-4 text-slate-700 text-sm leading-relaxed border-t border-slate-100 pt-4">{mentorUser.bio}</p>
         )}
       </div>
 
@@ -128,10 +129,10 @@ export default function MentorProfile() {
       {showCalendly && mentor.linkedinUrl?.includes('calendly') && (
         <div className="card mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Calendar size={16} className="text-blue-500" /> Book a Session
+            <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+              <Calendar size={16} className="text-primary-500" /> Book a Session
             </h2>
-            <button onClick={() => setShowCalendly(false)} className="text-xs text-gray-400 hover:text-gray-600">Close</button>
+            <button onClick={() => setShowCalendly(false)} className="text-xs text-slate-500 hover:text-slate-700">Close</button>
           </div>
           <div
             className="calendly-inline-widget rounded-xl overflow-hidden"
@@ -144,20 +145,20 @@ export default function MentorProfile() {
       <div className="grid sm:grid-cols-2 gap-6">
         {mentorUser?.skills?.length > 0 && (
           <div className="card">
-            <h2 className="font-semibold text-gray-900 mb-3">Skills</h2>
+            <h2 className="font-semibold text-slate-900 mb-3">Skills</h2>
             <div className="flex flex-wrap gap-2">
               {mentorUser.skills.map((s) => (
-                <span key={s} className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{s}</span>
+                <span key={s} className="text-sm bg-slate-100 text-slate-700 px-3 py-1 rounded-full">{s}</span>
               ))}
             </div>
           </div>
         )}
         {mentor.expertise?.length > 0 && (
           <div className="card">
-            <h2 className="font-semibold text-gray-900 mb-3">Areas of Expertise</h2>
+            <h2 className="font-semibold text-slate-900 mb-3">Areas of Expertise</h2>
             <div className="flex flex-wrap gap-2">
               {mentor.expertise.map((e) => (
-                <span key={e} className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full">{e}</span>
+                <span key={e} className="text-sm bg-primary-50 text-primary-600 px-3 py-1 rounded-full">{e}</span>
               ))}
             </div>
           </div>
@@ -166,18 +167,18 @@ export default function MentorProfile() {
 
       {Array.isArray(mentor.careerJourney) && mentor.careerJourney.length > 0 && (
         <div className="card mt-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Career Journey</h2>
+          <h2 className="font-semibold text-slate-900 mb-4">Career Journey</h2>
           <div className="space-y-4">
             {mentor.careerJourney.map((item, i) => (
               <div key={i} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="w-3 h-3 rounded-full bg-blue-500 mt-1" />
+                  <div className="w-3 h-3 rounded-full bg-primary-500 mt-1" />
                   {i < mentor.careerJourney.length - 1 && <div className="w-0.5 bg-gray-200 flex-1 mt-1" />}
                 </div>
                 <div className="pb-4">
-                  <div className="text-sm font-medium text-gray-900">{item.role}</div>
-                  <div className="text-sm text-gray-500">{item.company} · {item.year}</div>
-                  {item.description && <p className="text-xs text-gray-400 mt-1">{item.description}</p>}
+                  <div className="text-sm font-medium text-slate-900">{item.role}</div>
+                  <div className="text-sm text-slate-600">{item.company} · {item.year}</div>
+                  {item.description && <p className="text-xs text-slate-500 mt-1">{item.description}</p>}
                 </div>
               </div>
             ))}
@@ -189,12 +190,12 @@ export default function MentorProfile() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Send connection request</h3>
-            <p className="text-sm text-gray-500 mb-4">Introduce yourself to {mentorUser?.name}</p>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">Send connection request</h3>
+            <p className="text-sm text-slate-600 mb-4">Introduce yourself to {mentorUser?.name}</p>
             <textarea className="input resize-none" rows={4}
               placeholder="Hi! I'm a final-year CS student interested in backend development..."
               value={message} onChange={(e) => setMessage(e.target.value)} maxLength={500} />
-            <p className="text-xs text-gray-400 mt-1 text-right">{message.length}/500</p>
+            <p className="text-xs text-slate-500 mt-1 text-right">{message.length}/500</p>
             <div className="flex gap-3 mt-4">
               <button onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
               <button onClick={handleConnect} className="btn-primary flex-1" disabled={requesting}>
@@ -207,3 +208,7 @@ export default function MentorProfile() {
     </main>
   );
 }
+
+
+
+

@@ -70,7 +70,7 @@ const updateMentorProfile = async (req, res) => {
 // @route GET /api/mentors
 const getMentors = async (req, res) => {
   try {
-    const mentors = await User.find({ role: 'mentor' }).select('-password');
+    const mentors = await User.find({ role: 'mentor', _id: { $ne: req.user._id } }).select('-password');
     const mentorsWithProfiles = await Promise.all(
       mentors.map(async (mentor) => {
         const profile = await MentorProfile.findOne({ userId: mentor._id });
@@ -89,7 +89,7 @@ const getMatchedMentors = async (req, res) => {
   try {
     // Simple matching logic: mentors with similar skills or industry
     const student = await User.findById(req.user._id);
-    const mentors = await User.find({ role: 'mentor' }).select('-password');
+    const mentors = await User.find({ role: 'mentor', _id: { $ne: req.user._id } }).select('-password');
     const matched = await Promise.all(
       mentors.map(async (mentor) => {
         const profile = await MentorProfile.findOne({ userId: mentor._id });

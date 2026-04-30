@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { Send } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { PageSkeleton } from '../components/ui';
 
 export default function Chat() {
   const { roomId } = useParams();
@@ -12,6 +13,7 @@ export default function Chat() {
   const { socket, isConnected } = useSocket();
   const [messages, setMessages] = useState([]);
   const [roomReady, setRoomReady] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(true);
   const [text, setText] = useState('');
   const [typing, setTyping] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
@@ -63,6 +65,7 @@ export default function Chat() {
   // Fetch existing messages
   useEffect(() => {
     setRoomReady(false);
+    setLoadingMessages(true);
     api.get(`/chat/${roomId}`)
       .then((res) => {
         setMessages(res.data.messages);
@@ -71,7 +74,8 @@ export default function Chat() {
       .catch((err) => {
         toast.error(err.response?.data?.message || 'Failed to load chat room');
         setMessages([]);
-      });
+      })
+      .finally(() => setLoadingMessages(false));
   }, [roomId]);
 
   // Auto-scroll
@@ -119,12 +123,14 @@ export default function Chat() {
     return senderId?.toString() === user._id?.toString();
   };
 
+  if (loadingMessages) return <PageSkeleton variant="chat" />;
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-20 md:pb-4">
         {messages.length === 0 && (
-          <div className="text-center text-gray-400 py-10 text-sm">
+          <div className="text-center text-slate-500 py-10 text-sm">
             No messages yet. Say hello! 👋
           </div>
         )}
@@ -134,10 +140,10 @@ export default function Chat() {
           return (
             <div key={msg._id || i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-xs sm:max-w-md lg:max-w-lg rounded-2xl px-4 py-2.5 ${
-                mine ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-white border border-gray-200 text-gray-900 rounded-bl-sm shadow-sm'
+                mine ? 'bg-primary-600 text-white rounded-br-sm' : 'bg-white border border-slate-200 text-slate-900 rounded-bl-sm shadow-sm'
               }`}>
                 <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                <p className={`text-xs mt-1 ${mine ? 'text-blue-200' : 'text-gray-400'}`}>
+                <p className={`text-xs mt-1 ${mine ? 'text-primary-200' : 'text-slate-500'}`}>
                   {formatTime(msg.sentAt)}
                 </p>
               </div>
@@ -147,10 +153,10 @@ export default function Chat() {
 
         {otherTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
               <div className="flex gap-1 items-center">
                 {[0, 1, 2].map((i) => (
-                  <span key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                  <span key={i} className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce"
                     style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
               </div>
@@ -162,7 +168,7 @@ export default function Chat() {
       </div>
 
       {/* Input bar */}
-      <div className="border-t border-gray-200 bg-white px-4 py-3 fixed bottom-0 md:bottom-0 left-0 right-0 md:relative">
+      <div className="border-t border-slate-200 bg-white px-4 py-3 fixed bottom-0 md:bottom-0 left-0 right-0 md:relative">
         <div className="flex gap-2 max-w-4xl mx-auto">
           <textarea
             className="input resize-none flex-1"
@@ -184,3 +190,7 @@ export default function Chat() {
     </div>
   );
 }
+
+
+
+

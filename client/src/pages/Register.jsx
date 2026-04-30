@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle2, UserRound, GraduationCap } from 'lucide-react';
+import { UserRound, GraduationCap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import authRegisterImg from '../assets/auth-register.png';
+import logo from '../assets/logo.png';
 
 const INDUSTRIES = [
   'Technology',
@@ -65,36 +67,39 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 flex items-center justify-center">
       <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-6">
-        <div className="card hidden lg:block">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+        {/* Left panel */}
+        <div className="card hidden lg:flex flex-col justify-between overflow-hidden">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
             <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
           </Link>
 
-          <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Structured onboarding for real career outcomes.</h1>
-          <p className="text-sm text-slate-600 mt-4 leading-relaxed">
-            Build your profile once, then use it across mentorship matching, referrals, resume analysis, and application tracking.
-          </p>
+          <div className="flex-1 flex items-center justify-center py-6">
+            <img
+              src={authRegisterImg}
+              alt="Students learning online"
+              className="w-full max-w-xs object-contain drop-shadow-md"
+            />
+          </div>
 
-          <div className="mt-8 space-y-3 text-sm text-slate-600">
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-600" /> Role-based access by student, mentor, and admin</div>
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-600" /> AI matching and resume intelligence from profile context</div>
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-600" /> Data flows into referrals and application tracker</div>
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900 leading-snug">Built for students and mentors.</h2>
+            <p className="text-sm text-slate-500 mt-1">One profile powers matching, referrals, resume AI, and more.</p>
           </div>
         </div>
 
         <div className="card max-w-md w-full mx-auto">
           <div className="mb-6">
             <Link to="/" className="inline-flex items-center gap-2 lg:hidden mb-4">
-              <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
-              <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
+              <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
+              <span className="text-sm font-normal text-slate-900">NxtConnect</span>
             </Link>
-            <h2 className="text-2xl font-semibold text-slate-900">Create your account</h2>
-            <p className="text-slate-500 text-sm mt-1">Step {step} of 2</p>
+            <h2 className="text-xl font-normal text-slate-900">Create your account</h2>
+            <p className="text-slate-500 text-xs mt-1">Step {step} of 2</p>
           </div>
 
           <div className="w-full bg-slate-100 rounded-full h-2 mb-6" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={2}>
-            <div className={`bg-blue-700 h-2 rounded-full transition-all duration-200 ${step === 1 ? 'w-1/2' : 'w-full'}`} />
+            <div className={`bg-primary-700 h-2 rounded-full transition-all duration-200 ${step === 1 ? 'w-1/2' : 'w-full'}`} />
           </div>
 
           <form onSubmit={step === 1 ? goNext : handleSubmit} className="space-y-4">
@@ -112,7 +117,7 @@ export default function Register() {
                         key={key}
                         onClick={() => setForm({ ...form, role: key })}
                         className={`rounded-xl border px-3 py-3 text-sm font-semibold flex items-center justify-center gap-2 ${
-                          form.role === key ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          form.role === key ? 'border-primary-200 bg-primary-50 text-primary-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                         }`}
                       >
                         <Icon size={15} />
@@ -176,10 +181,11 @@ export default function Register() {
 
           <p className="text-center text-sm text-slate-500 mt-5">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-700 hover:underline font-semibold">Sign in</Link>
+            <Link to="/login" className="text-primary-700 hover:underline font-semibold">Sign in</Link>
           </p>
         </div>
       </div>
     </div>
   );
 }
+

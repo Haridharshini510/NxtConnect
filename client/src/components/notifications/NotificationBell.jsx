@@ -54,7 +54,7 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        className="relative p-2 text-slate-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
@@ -65,15 +65,15 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">Notifications</h3>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+            <h3 className="font-semibold text-slate-900">Notifications</h3>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                  className="text-xs text-primary-600 hover:underline flex items-center gap-1"
                 >
                   <CheckCheck size={12} /> Mark all read
                 </button>
@@ -84,7 +84,7 @@ export default function NotificationBell() {
           {/* List */}
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
             {notifications.length === 0 ? (
-              <div className="py-10 text-center text-gray-400 text-sm">
+              <div className="py-10 text-center text-slate-500 text-sm">
                 <Bell size={32} className="mx-auto mb-2 opacity-30" />
                 You're all caught up!
               </div>
@@ -92,24 +92,24 @@ export default function NotificationBell() {
               notifications.slice(0, 20).map((notif) => (
                 <div
                   key={notif._id}
-                  className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${!notif.isRead ? 'bg-blue-50/40' : ''}`}
+                  className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors ${!notif.isRead ? 'bg-primary-50/40' : ''}`}
                   onClick={() => handleClick(notif)}
                 >
                   <span className="text-xl flex-shrink-0 mt-0.5">
                     {typeIcons[notif.type] || typeIcons.default}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 leading-snug">{notif.title}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notif.body}</p>
-                    <p className="text-xs text-gray-400 mt-1">{timeAgo(notif.createdAt)}</p>
+                    <p className="text-sm font-medium text-slate-900 leading-snug">{notif.title}</p>
+                    <p className="text-xs text-slate-600 mt-0.5 line-clamp-2">{notif.body}</p>
+                    <p className="text-xs text-slate-500 mt-1">{timeAgo(notif.createdAt)}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2 flex-shrink-0">
                     {!notif.isRead && (
-                      <span className="w-2 h-2 rounded-full bg-blue-500 mt-1" />
+                      <span className="w-2 h-2 rounded-full bg-primary-500 mt-1" />
                     )}
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
-                      className="text-gray-300 hover:text-red-400 transition-colors"
+                      className="text-slate-400 hover:text-red-400 transition-colors"
                     >
                       <X size={14} />
                     </button>
@@ -120,10 +120,10 @@ export default function NotificationBell() {
           </div>
 
           {notifications.length > 0 && (
-            <div className="px-4 py-2 border-t border-gray-100 text-center">
+            <div className="px-4 py-2 border-t border-slate-100 text-center">
               <button
                 onClick={() => { setOpen(false); navigate('/notifications'); }}
-                className="text-xs text-blue-600 hover:underline"
+                className="text-xs text-primary-600 hover:underline"
               >
                 View all notifications
               </button>
@@ -134,3 +134,6 @@ export default function NotificationBell() {
     </div>
   );
 }
+
+
+

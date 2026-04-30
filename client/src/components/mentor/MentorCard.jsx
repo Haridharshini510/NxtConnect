@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Star, Briefcase, Users } from 'lucide-react';
-import { Card, Badge, Avatar } from '../ui';
+import { Star, Briefcase, Users, UserPlus } from 'lucide-react';
+import { Card, Badge, Avatar, Button } from '../ui';
 
 /**
  * REFACTORED MENTOR CARD
@@ -88,6 +88,12 @@ export default function MentorCard({ mentor, matchScore }) {
               </span>
             </div>
           )}
+
+          {/* Connect Button */}
+          <Button variant="primary" size="sm" className="w-full mt-4">
+            <UserPlus size={16} />
+            Connect
+          </Button>
         </Card.Body>
       </Card>
     </Link>

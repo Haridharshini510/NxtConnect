@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, LockKeyhole } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import authLoginImg from '../assets/auth-login.png';
+import logo from '../assets/logo.png';
 
 export default function Login() {
   const { login } = useAuth();
@@ -26,27 +28,36 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 flex items-center justify-center">
       <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-6">
-        <div className="card hidden lg:flex flex-col justify-between">
-          <div>
-            <Link to="/" className="inline-flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
-              <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
-            </Link>
-            <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Secure access to your career workspace.</h1>
-            <p className="text-slate-600 mt-4 text-sm leading-relaxed">
-              Continue with mentorship, AI analysis, referral workflows, and application tracking in one reliable platform.
-            </p>
+
+        {/* Left panel */}
+        <div className="card hidden lg:flex flex-col justify-between overflow-hidden">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
+          </Link>
+
+          <div className="flex-1 flex items-center justify-center py-6">
+            <img
+              src={authLoginImg}
+              alt="Developers collaborating"
+              className="w-full max-w-xs object-contain drop-shadow-md"
+            />
           </div>
-          <div className="space-y-3">
-            <div className="status-chip-neutral w-fit"><ShieldCheck size={13} /> Protected session handling</div>
-            <div className="status-chip-neutral w-fit"><LockKeyhole size={13} /> Role-based access controls</div>
+
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900 leading-snug">Your career workspace, secured.</h2>
+            <p className="text-sm text-slate-500 mt-1">Mentorship, referrals, and AI tools — all in one place.</p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <div className="status-chip-neutral"><ShieldCheck size={13} /> Protected sessions</div>
+              <div className="status-chip-neutral"><LockKeyhole size={13} /> Role-based access</div>
+            </div>
           </div>
         </div>
 
         <div className="card max-w-md w-full mx-auto">
           <div className="mb-6">
             <Link to="/" className="inline-flex items-center gap-2 lg:hidden mb-4">
-              <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+              <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
             </Link>
             <h2 className="text-2xl font-semibold text-slate-900">Welcome back</h2>
@@ -85,10 +96,11 @@ export default function Login() {
 
           <p className="text-center text-sm text-slate-500 mt-5">
             New to NxtConnect?{' '}
-            <Link to="/register" className="text-blue-700 hover:underline font-semibold">Create account</Link>
+            <Link to="/register" className="text-primary-700 hover:underline font-semibold">Create account</Link>
           </p>
         </div>
       </div>
     </div>
   );
 }
+

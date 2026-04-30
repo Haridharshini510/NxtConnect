@@ -3,9 +3,9 @@ import { Heart, MessageCircle, Trash2, Send, ChevronDown, ChevronUp } from 'luci
 import { useAuth } from '../../context/AuthContext';
 
 const typeColors = {
-  story: 'bg-blue-50 text-blue-600',
+  story: 'bg-primary-50 text-primary-600',
   tip: 'bg-green-50 text-green-600',
-  opportunity: 'bg-purple-50 text-purple-600',
+  opportunity: 'bg-brand-50 text-brand-600',
   achievement: 'bg-yellow-50 text-yellow-600',
   question: 'bg-red-50 text-red-600',
 };
@@ -56,18 +56,18 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
           {author?.profilePhoto ? (
             <img src={author.profilePhoto} className="w-10 h-10 rounded-full object-cover" alt={author.name} />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-blue-600 font-bold">{author?.name?.[0]}</span>
+            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-primary-600 font-bold">{author?.name?.[0]}</span>
             </div>
           )}
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-gray-900 text-sm">{author?.name}</span>
+              <span className="font-semibold text-slate-900 text-sm">{author?.name}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
-                author?.role === 'mentor' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'
+                author?.role === 'mentor' ? 'bg-primary-50 text-primary-600' : 'bg-slate-100 text-slate-600'
               }`}>{author?.role}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+            <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
               <span>{author?.industry || author?.college}</span>
               <span>·</span>
               <span>{timeAgo(post.createdAt)}</span>
@@ -77,12 +77,12 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
 
         <div className="flex items-center gap-2">
           {post.type && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[post.type] || 'bg-gray-100 text-gray-500'}`}>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[post.type] || 'bg-slate-100 text-slate-600'}`}>
               {typeLabels[post.type] || post.type}
             </span>
           )}
           {isOwn && (
-            <button onClick={() => onDelete(post._id)} className="p-1 text-gray-300 hover:text-red-400 transition-colors">
+            <button onClick={() => onDelete(post._id)} className="p-1 text-slate-400 hover:text-red-400 transition-colors">
               <Trash2 size={14} />
             </button>
           )}
@@ -90,23 +90,23 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
       </div>
 
       {/* Content */}
-      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-sm">{post.content}</p>
+      <p className="text-slate-900 leading-relaxed whitespace-pre-wrap text-sm">{post.content}</p>
 
       {/* Tags */}
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {post.tags.map((t) => (
-            <span key={t} className="text-xs text-blue-500 hover:underline cursor-pointer">#{t}</span>
+            <span key={t} className="text-xs text-primary-500 hover:underline cursor-pointer">#{t}</span>
           ))}
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-1 border-t border-gray-50">
+      <div className="flex items-center gap-4 pt-1 border-t border-slate-100">
         <button
           onClick={() => onLike(post._id)}
           className={`flex items-center gap-1.5 text-sm transition-colors ${
-            isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
+            isLiked ? 'text-red-500' : 'text-slate-500 hover:text-red-400'
           }`}
         >
           <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
@@ -115,7 +115,7 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
 
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-blue-500 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-500 transition-colors"
         >
           <MessageCircle size={16} />
           <span>{post.comments?.length || 0}</span>
@@ -128,24 +128,24 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
         <div className="space-y-3 pt-1">
           {post.comments?.map((c) => (
             <div key={c._id} className="flex gap-2">
-              <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                 {c.authorId?.profilePhoto ? (
                   <img src={c.authorId.profilePhoto} className="w-7 h-7 rounded-full object-cover" alt="" />
                 ) : (
-                  <span className="text-gray-500 text-xs font-bold">{c.authorId?.name?.[0]}</span>
+                  <span className="text-slate-600 text-xs font-bold">{c.authorId?.name?.[0]}</span>
                 )}
               </div>
-              <div className="bg-gray-50 rounded-xl px-3 py-2 flex-1">
-                <span className="text-xs font-semibold text-gray-800">{c.authorId?.name} </span>
-                <span className="text-xs text-gray-600">{c.content}</span>
+              <div className="bg-slate-50 rounded-xl px-3 py-2 flex-1">
+                <span className="text-xs font-semibold text-slate-900">{c.authorId?.name} </span>
+                <span className="text-xs text-slate-700">{c.content}</span>
               </div>
             </div>
           ))}
 
           {/* Comment input */}
           <div className="flex gap-2 mt-2">
-            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-blue-600 text-xs font-bold">{user?.name?.[0]}</span>
+            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-primary-600 text-xs font-bold">{user?.name?.[0]}</span>
             </div>
             <div className="flex gap-2 flex-1">
               <input
@@ -170,3 +170,6 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
     </div>
   );
 }
+
+
+

@@ -15,16 +15,15 @@ import {
   FileText,
   ClipboardList,
   Gift,
-  BellRing,
   Lock,
 } from 'lucide-react';
 import NotificationBell from '../notifications/NotificationBell';
+import logo from '../../assets/logo.png';
 
 const getNavLinks = (role) => {
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/mentors', label: 'Mentors', icon: Users },
-    { to: '/ai-matching', label: 'AI Match', icon: Sparkles },
     { to: '/connections', label: 'Connections', icon: MessageSquare },
     { to: '/applications', label: 'Applications', icon: ClipboardList },
     { to: '/referrals', label: 'Referrals', icon: Gift },
@@ -32,7 +31,6 @@ const getNavLinks = (role) => {
     { to: '/feed', label: 'Feed', icon: Rss },
     { to: '/workshops', label: 'Events', icon: Calendar },
     { to: '/jobs', label: 'Jobs', icon: Briefcase },
-    { to: '/notifications', label: 'Notifications', icon: BellRing },
     { to: '/roadmaps', label: 'Roadmaps', icon: Map },
   ];
   if (role === 'admin') links.push({ to: '/admin', label: 'Admin', icon: ShieldCheck });
@@ -57,7 +55,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3">
           <Link to="/dashboard" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-blue-700 text-white text-xs font-bold flex items-center justify-center">NC</div>
+            <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
             <div className="hidden sm:block">
               <div className="text-sm font-semibold text-slate-900 leading-tight">NxtConnect</div>
               <div className="text-[11px] text-slate-500 leading-tight">Mentorship and Career Platform</div>
@@ -71,7 +69,7 @@ export default function Navbar() {
                 to={to}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap ${
                   isActive(to)
-                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+                    ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-100'
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
@@ -90,13 +88,13 @@ export default function Navbar() {
 
             <Link
               to="/profile/edit"
-              className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+              className="flex items-center gap-2 text-sm text-slate-600 hover:text-primary-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
             >
               {user?.profilePhoto ? (
                 <img src={user.profilePhoto} className="w-8 h-8 rounded-full object-cover" alt="avatar" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <User size={15} className="text-blue-700" />
+                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <User size={15} className="text-primary-700" />
                 </div>
               )}
               <span className="hidden sm:block font-medium text-sm">{user?.name?.split(' ')[0]}</span>
@@ -115,7 +113,7 @@ export default function Navbar() {
             key={to}
             to={to}
             className={`flex min-w-[84px] flex-col items-center gap-0.5 px-2 py-1.5 text-[11px] ${
-              isActive(to) ? 'text-blue-700' : 'text-slate-500'
+              isActive(to) ? 'text-primary-700' : 'text-slate-500'
             }`}
           >
             <Icon size={18} />
@@ -126,3 +124,5 @@ export default function Navbar() {
     </nav>
   );
 }
+
+
