@@ -14,8 +14,8 @@ export default function Roadmaps() {
   const totalWeeks = (roadmap) => roadmap.steps?.reduce((acc, s) => acc + (s.estimatedWeeks || 0), 0) || 0;
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">Career Roadmaps</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+      <h1 className="section-headline mb-2">Career Roadmaps</h1>
       <p className="text-slate-600 text-sm mb-8">Step-by-step paths curated by industry mentors</p>
 
       {loading ? (
@@ -70,4 +70,5 @@ export default function Roadmaps() {
     </main>
   );
 }
+
 

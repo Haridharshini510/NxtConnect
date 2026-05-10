@@ -50,10 +50,10 @@ export default function Jobs() {
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.value });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Job Board</h1>
+          <h1 className="section-headline">Job Board</h1>
           <p className="text-slate-600 text-sm mt-1">{jobs.length} opportunities</p>
         </div>
         {user?.role === 'mentor' && (
@@ -128,5 +128,6 @@ export default function Jobs() {
     </main>
   );
 }
+
 
 

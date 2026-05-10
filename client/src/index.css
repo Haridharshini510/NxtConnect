@@ -5,29 +5,30 @@
 @layer base {
   :root {
     --white: #ffffff;
-    --gray: #656c79;
-    --light-gray: #f3f6fc;
-    --slate-blue: #5969ab;
-    --blue: #0987f7;
-    --deep-blue: #082051;
-    --bg: var(--light-gray);
-    --surface: var(--white);
-    --surface-muted: #e9edf6;
-    --border: #d3dae8;
-    --border-strong: #a7b4cc;
-    --text: var(--deep-blue);
+    --gray: #4b5c7a;
+    --light-gray: #eef3ff;
+    --ink: #081a3a;
+    --brand: #315cff;
+    --brand-deep: #1636b8;
+    --brand-soft: #dce6ff;
+    --cyan: #18b6ff;
+    --bg: linear-gradient(180deg, #f7faff 0%, #edf3ff 42%, #eef2ff 100%);
+    --surface: rgba(255, 255, 255, 0.95);
+    --surface-muted: #e9efff;
+    --border: #d7e2ff;
+    --border-strong: #b9c8f4;
+    --text: var(--ink);
     --text-muted: var(--gray);
-    --primary: var(--blue);
-    --primary-hover: #0876d9;
-    --brand: var(--slate-blue);
+    --primary: var(--brand);
+    --primary-hover: #294de0;
     --success: #15803d;
     --warning: #b45309;
     --danger: #b91c1c;
-    --radius-sm: 0.5rem;
-    --radius-md: 0.75rem;
-    --radius-lg: 1rem;
-    --shadow-soft: 0 1px 2px rgba(8, 32, 81, 0.08), 0 6px 16px rgba(8, 32, 81, 0.06);
-    --shadow-hover: 0 2px 8px rgba(8, 32, 81, 0.1), 0 12px 28px rgba(8, 32, 81, 0.1);
+    --radius-sm: 0.65rem;
+    --radius-md: 0.95rem;
+    --radius-lg: 1.25rem;
+    --shadow-soft: 0 8px 18px rgba(11, 45, 125, 0.06), 0 2px 4px rgba(10, 32, 82, 0.04);
+    --shadow-hover: 0 22px 36px rgba(11, 45, 125, 0.12), 0 6px 12px rgba(10, 32, 82, 0.08);
   }
 
   * {
@@ -38,26 +39,29 @@
     @apply antialiased;
     background: var(--bg);
     color: var(--text);
-    font-family: "Merriweather", "Segoe UI", system-ui, -apple-system, serif;
+    font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
     font-size: 16px;
-    line-height: 1.1;
+    line-height: 1.45;
+    min-height: 100vh;
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4 {
     @apply tracking-tight;
-    font-family: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: "Sora", "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: #0f2557;
   }
 
   h1 {
-    font-size: 72px;
-    line-height: 1.1;
-    font-weight: 500;
+    font-size: clamp(2rem, 2.7vw, 2.7rem);
+    line-height: 1.12;
+    font-weight: 700;
   }
 
   h2 {
-    font-size: 52px;
+    font-size: clamp(1.55rem, 2.1vw, 2rem);
     line-height: 1.2;
-    font-weight: 500;
+    font-weight: 650;
   }
 
   a, button, input, select, textarea {
@@ -78,36 +82,37 @@
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed;
-    background: var(--primary);
-    box-shadow: 0 1px 2px rgba(9, 135, 247, 0.35);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--cyan) 100%);
+    box-shadow: 0 8px 18px rgba(49, 92, 255, 0.28);
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--primary-hover);
+    background: linear-gradient(135deg, var(--primary-hover) 0%, #12a4e9 100%);
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl border;
-    background: var(--surface);
-    border-color: var(--border-strong);
-    color: var(--deep-blue);
+    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--border);
+    color: var(--ink);
   }
   .btn-secondary:hover {
-    background: var(--surface-muted);
-    border-color: #b8c5d8;
+    background: #f7faff;
+    border-color: var(--border-strong);
   }
 
   .input {
     @apply w-full rounded-xl px-3.5 py-2.5 text-sm border;
-    border-color: var(--border-strong);
-    background: #fff;
-    color: var(--deep-blue);
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
   }
   .input::placeholder {
-    color: #7b8cb0;
+    color: #7185b7;
   }
   .input:focus {
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(89, 105, 171, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(49, 92, 255, 0.18);
   }
 
   .card {
@@ -116,6 +121,7 @@
     border-color: var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(8px);
   }
   .card:hover {
     box-shadow: var(--shadow-hover);
@@ -151,6 +157,9 @@
 
   .page-shell {
     @apply min-h-[calc(100vh-4rem)] pb-20 lg:pb-0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(24, 182, 255, 0.16), transparent 32%),
+      radial-gradient(circle at 100% 10%, rgba(49, 92, 255, 0.14), transparent 30%);
   }
 
   .section-headline {

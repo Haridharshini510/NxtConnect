@@ -1,5 +1,7 @@
 const Resume = require('../models/Resume');
-const { analyzeResume, generateExperienceBullet } = require('../services/aiService');
+const pdfParse = require('pdf-parse');
+const { cloudinary } = require('../cloudinary');
+const { analyzeResume, analyzeResumeText, generateExperienceBullet } = require('../services/aiService');
 
 // @desc  Get own resume (create blank if doesn't exist)
 // @route GET /api/resume
@@ -50,22 +52,69 @@ const analyzeMyResume = async (req, res) => {
     const resume = await Resume.findOne({ userId: req.user._id });
     if (!resume) return res.status(404).json({ message: 'Resume not found. Build your resume first.' });
 
-    // Check resume has enough content
-    const hasContent = resume.summary || resume.experience?.length > 0 || resume.skills?.length > 0;
+    const hasPdfText = Boolean(resume.uploadedResume?.extractedText?.trim());
+    const hasFormContent = Boolean(resume.summary || resume.experience?.length > 0 || resume.skills?.length > 0);
+    const hasContent = hasPdfText || hasFormContent;
     if (!hasContent) {
-      return res.status(400).json({ message: 'Add some content to your resume before analyzing.' });
+      return res.status(400).json({ message: 'Upload a resume PDF or add content in the form before analyzing.' });
     }
 
-    const analysis = await analyzeResume(resume.toObject());
+    const source = hasPdfText ? 'pdf' : 'form';
+    const analysis = hasPdfText
+      ? await analyzeResumeText(resume.uploadedResume.extractedText)
+      : await analyzeResume(resume.toObject());
 
     // Cache the analysis on the resume document
-    resume.aiAnalysis = { ...analysis, analyzedAt: new Date() };
+    resume.aiAnalysis = { ...analysis, source, analyzedAt: new Date() };
     await resume.save();
 
     res.json({ analysis: resume.aiAnalysis });
   } catch (err) {
     console.error('analyzeMyResume error:', err);
     res.status(500).json({ message: err.message || 'AI analysis failed' });
+  }
+};
+
+// @desc  Upload resume PDF, save URL + extracted text on resume
+// @route POST /api/resume/upload
+const uploadMyResumePdf = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const isPdf = req.file.mimetype === 'application/pdf' || req.file.originalname?.toLowerCase().endsWith('.pdf');
+    if (!isPdf) return res.status(400).json({ message: 'Only PDF files are allowed' });
+
+    const parsed = await pdfParse(req.file.buffer);
+    const extractedText = (parsed?.text || '').trim();
+    if (!extractedText) {
+      return res.status(400).json({ message: 'Could not extract text from this PDF. Please try a text-based PDF.' });
+    }
+
+    const dataUri = `data:application/pdf;base64,${req.file.buffer.toString('base64')}`;
+    const uploaded = await cloudinary.uploader.upload(dataUri, {
+      folder: 'nextconnect/resumes',
+      resource_type: 'raw',
+      public_id: `resume_${req.user._id}_${Date.now()}`,
+      format: 'pdf',
+    });
+
+    const resume = await Resume.findOneAndUpdate(
+      { userId: req.user._id },
+      {
+        uploadedResume: {
+          url: uploaded.secure_url,
+          fileName: req.file.originalname,
+          extractedText,
+          uploadedAt: new Date(),
+        },
+      },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    res.json({ resume });
+  } catch (err) {
+    console.error('uploadMyResumePdf error:', err);
+    res.status(500).json({ message: err.message || 'Failed to upload resume PDF' });
   }
 };
 
@@ -84,4 +133,4 @@ const generateBullet = async (req, res) => {
   }
 };
 
-module.exports = { getMyResume, saveResume, analyzeMyResume, generateBullet };
+module.exports = { getMyResume, saveResume, analyzeMyResume, generateBullet, uploadMyResumePdf };

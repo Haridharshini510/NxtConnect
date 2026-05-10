@@ -3,7 +3,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import WorkshopCard from '../components/events/WorkshopCard';
 import toast from 'react-hot-toast';
-import { Plus, X, Calendar } from 'lucide-react';
+import { Plus, X, Calendar, CalendarClock, LayoutGrid } from 'lucide-react';
 
 const CATEGORIES = ['Resume Review', 'Mock Interview', 'Industry Talk', 'Technical Workshop', 'Career Planning', 'Networking', 'Other'];
 
@@ -81,11 +81,11 @@ export default function Workshops() {
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Workshops & Events</h1>
+          <h1 className="section-headline">Workshops & Events</h1>
           <p className="text-slate-600 text-sm mt-1">Live sessions, mock interviews, and industry talks</p>
         </div>
         {(user?.role === 'mentor' || user?.role === 'admin') && (
@@ -171,7 +171,10 @@ export default function Workshops() {
             className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
               filter === f ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}>
-            {f === 'upcoming' ? '📅 Upcoming' : '🗂 All'}
+                        <span className="inline-flex items-center gap-1.5">
+              {f === 'upcoming' ? <CalendarClock size={14} /> : <LayoutGrid size={14} />}
+              {f === 'upcoming' ? 'Upcoming' : 'All'}
+            </span>
           </button>
         ))}
       </div>
@@ -211,5 +214,7 @@ export default function Workshops() {
     </main>
   );
 }
+
+
 
 

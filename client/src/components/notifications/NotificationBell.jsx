@@ -1,18 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, X, Check, CheckCheck } from 'lucide-react';
+import {
+  Bell,
+  X,
+  CheckCheck,
+  Handshake,
+  PartyPopper,
+  XCircle,
+  MessageCircle,
+  CalendarCheck,
+  GraduationCap,
+  Heart,
+} from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 
 const typeIcons = {
-  connection_request: '🤝',
-  connection_accepted: '🎉',
-  connection_declined: '❌',
-  new_message: '💬',
-  session_booked: '📅',
-  event_registered: '🎓',
-  feed_like: '❤️',
-  feed_comment: '💬',
-  default: '🔔',
+  connection_request: Handshake,
+  connection_accepted: PartyPopper,
+  connection_declined: XCircle,
+  new_message: MessageCircle,
+  session_booked: CalendarCheck,
+  event_registered: GraduationCap,
+  feed_like: Heart,
+  feed_comment: MessageCircle,
+  default: Bell,
 };
 
 export default function NotificationBell() {
@@ -21,7 +32,6 @@ export default function NotificationBell() {
   const navigate = useNavigate();
   const ref = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', handler);
@@ -29,9 +39,7 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    if (open) {
-      fetchNotifications();
-    }
+    if (open) fetchNotifications();
   }, [open, fetchNotifications]);
 
   const handleClick = async (notif) => {
@@ -66,7 +74,6 @@ export default function NotificationBell() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden">
-          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <h3 className="font-semibold text-slate-900">Notifications</h3>
             <div className="flex items-center gap-2">
@@ -81,7 +88,6 @@ export default function NotificationBell() {
             </div>
           </div>
 
-          {/* List */}
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
             {notifications.length === 0 ? (
               <div className="py-10 text-center text-slate-500 text-sm">
@@ -89,33 +95,37 @@ export default function NotificationBell() {
                 You're all caught up!
               </div>
             ) : (
-              notifications.slice(0, 20).map((notif) => (
-                <div
-                  key={notif._id}
-                  className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors ${!notif.isRead ? 'bg-primary-50/40' : ''}`}
-                  onClick={() => handleClick(notif)}
-                >
-                  <span className="text-xl flex-shrink-0 mt-0.5">
-                    {typeIcons[notif.type] || typeIcons.default}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 leading-snug">{notif.title}</p>
-                    <p className="text-xs text-slate-600 mt-0.5 line-clamp-2">{notif.body}</p>
-                    <p className="text-xs text-slate-500 mt-1">{timeAgo(notif.createdAt)}</p>
+              notifications.slice(0, 20).map((notif) => {
+                const TypeIcon = typeIcons[notif.type] || typeIcons.default;
+
+                return (
+                  <div
+                    key={notif._id}
+                    className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors ${!notif.isRead ? 'bg-primary-50/40' : ''}`}
+                    onClick={() => handleClick(notif)}
+                  >
+                    <span className="text-primary-600 flex-shrink-0 mt-0.5">
+                      <TypeIcon size={18} />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-900 leading-snug">{notif.title}</p>
+                      <p className="text-xs text-slate-600 mt-0.5 line-clamp-2">{notif.body}</p>
+                      <p className="text-xs text-slate-500 mt-1">{timeAgo(notif.createdAt)}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      {!notif.isRead && (
+                        <span className="w-2 h-2 rounded-full bg-primary-500 mt-1" />
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
+                        className="text-slate-400 hover:text-red-400 transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                    {!notif.isRead && (
-                      <span className="w-2 h-2 rounded-full bg-primary-500 mt-1" />
-                    )}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
-                      className="text-slate-400 hover:text-red-400 transition-colors"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -134,6 +144,3 @@ export default function NotificationBell() {
     </div>
   );
 }
-
-
-

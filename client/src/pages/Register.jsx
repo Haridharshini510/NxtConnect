@@ -83,8 +83,8 @@ export default function Register() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-slate-900 leading-snug">Built for students and mentors.</h2>
-            <p className="text-sm text-slate-500 mt-1">One profile powers matching, referrals, resume AI, and more.</p>
+            <h2 className="text-xl font-normal text-slate-900 leading-snug">Built for students and mentors.</h2>
+            <p className="text-xs text-slate-500 mt-1">One profile powers matching, referrals, resume AI, and more.</p>
           </div>
         </div>
 
@@ -94,7 +94,7 @@ export default function Register() {
               <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="text-sm font-normal text-slate-900">NxtConnect</span>
             </Link>
-            <h2 className="text-xl font-normal text-slate-900">Create your account</h2>
+            <h2 className="text-xl font-light text-slate-900">Create your account</h2>
             <p className="text-slate-500 text-xs mt-1">Step {step} of 2</p>
           </div>
 

@@ -32,7 +32,7 @@ export default function RoadmapDetail() {
   const progress = roadmap.steps?.length > 0 ? Math.round((completed.size / roadmap.steps.length) * 100) : 0;
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
+    <main className="max-w-3xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
       <Link to="/roadmaps" className="flex items-center gap-1 text-sm text-slate-600 hover:text-primary-600 mb-6 transition-colors">
         <ArrowLeft size={14} /> Back to Roadmaps
       </Link>
@@ -114,5 +114,7 @@ export default function RoadmapDetail() {
     </main>
   );
 }
+
+
 
 

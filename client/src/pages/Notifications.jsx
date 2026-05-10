@@ -1,19 +1,30 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Trash2, CheckCheck } from 'lucide-react';
+import {
+  Bell,
+  Trash2,
+  CheckCheck,
+  Handshake,
+  PartyPopper,
+  XCircle,
+  MessageCircle,
+  CalendarCheck,
+  GraduationCap,
+  Heart,
+} from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import { PageSkeleton } from '../components/ui';
 
 const typeIcons = {
-  connection_request: '🤝',
-  connection_accepted: '🎉',
-  connection_declined: '❌',
-  new_message: '💬',
-  session_booked: '📅',
-  event_registered: '🎓',
-  feed_like: '❤️',
-  feed_comment: '💬',
-  default: '🔔',
+  connection_request: Handshake,
+  connection_accepted: PartyPopper,
+  connection_declined: XCircle,
+  new_message: MessageCircle,
+  session_booked: CalendarCheck,
+  event_registered: GraduationCap,
+  feed_like: Heart,
+  feed_comment: MessageCircle,
+  default: Bell,
 };
 
 export default function Notifications() {
@@ -42,10 +53,10 @@ export default function Notifications() {
   };
 
   return (
-    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20 lg:pb-8">
+    <main className="max-w-2xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 lg:pb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
+          <h1 className="section-headline">Notifications</h1>
           {unreadCount > 0 && (
             <p className="text-sm text-slate-600 mt-0.5">{unreadCount} unread</p>
           )}
@@ -65,38 +76,42 @@ export default function Notifications() {
         </div>
       ) : (
         <div className="space-y-2">
-          {notifications.map((notif) => (
-            <div
-              key={notif._id}
-              onClick={() => handleClick(notif)}
-              className={`card flex items-start gap-4 cursor-pointer hover:shadow-md transition-all ${
-                !notif.isRead ? 'border-l-4 border-l-blue-500 bg-primary-50/20' : ''
-              }`}
-            >
-              <span className="text-2xl flex-shrink-0">{typeIcons[notif.type] || typeIcons.default}</span>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-slate-900 text-sm">{notif.title}</p>
-                  {!notif.isRead && <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-1.5" />}
-                </div>
-                <p className="text-sm text-slate-700 mt-0.5">{notif.body}</p>
-                <p className="text-xs text-slate-500 mt-1.5">{timeAgo(notif.createdAt)}</p>
-              </div>
-
-              <button
-                onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
-                className="flex-shrink-0 p-1 text-slate-400 hover:text-red-400 transition-colors"
+          {notifications.map((notif) => {
+            const TypeIcon = typeIcons[notif.type] || typeIcons.default;
+            return (
+              <div
+                key={notif._id}
+                onClick={() => handleClick(notif)}
+                className={`card flex items-start gap-4 cursor-pointer hover:shadow-md transition-all ${
+                  !notif.isRead ? 'border-l-4 border-l-blue-500 bg-primary-50/20' : ''
+                }`}
               >
-                <Trash2 size={15} />
-              </button>
-            </div>
-          ))}
+                <span className="text-primary-600 flex-shrink-0 mt-0.5">
+                  <TypeIcon size={18} />
+                </span>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-slate-900 text-sm">{notif.title}</p>
+                    {!notif.isRead && <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-1.5" />}
+                  </div>
+                  <p className="text-sm text-slate-700 mt-0.5">{notif.body}</p>
+                  <p className="text-xs text-slate-500 mt-1.5">{timeAgo(notif.createdAt)}</p>
+                </div>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
+                  className="flex-shrink-0 p-1 text-slate-400 hover:text-red-400 transition-colors"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </main>
   );
 }
-
 
 

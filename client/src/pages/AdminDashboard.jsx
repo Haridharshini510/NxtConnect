@@ -90,7 +90,7 @@ export default function AdminDashboard() {
   const maxGrowth = userGrowth.length > 0 ? Math.max(...userGrowth.map((g) => g.count)) : 1;
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <ShieldCheck size={22} className="text-primary-700" />
@@ -355,6 +355,7 @@ export default function AdminDashboard() {
     </main>
   );
 }
+
 
 
 

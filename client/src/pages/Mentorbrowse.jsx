@@ -10,10 +10,35 @@ const INDUSTRIES = ['All', 'Technology', 'Finance', 'Healthcare', 'Design', 'Mar
 export default function MentorBrowse() {
   const { user } = useAuth();
   const [mentors, setMentors] = useState([]);
+  const [connectedMentorIds, setConnectedMentorIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [matchMode, setMatchMode] = useState(false);
   const [industry, setIndustry] = useState('All');
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const fetchConnections = async () => {
+      if (user?.role !== 'student') {
+        setConnectedMentorIds(new Set());
+        return;
+      }
+
+      try {
+        const res = await api.get('/connections/my');
+        const ids = (res.data.connections || [])
+          .filter((conn) => conn.status !== 'declined')
+          .map((conn) => conn.mentorId?._id || conn.mentorId)
+          .filter(Boolean)
+          .map((id) => id.toString());
+        setConnectedMentorIds(new Set(ids));
+      } catch (e) {
+        console.error('Failed to load connections for mentor filtering', e);
+        setConnectedMentorIds(new Set());
+      }
+    };
+
+    fetchConnections();
+  }, [user?.role]);
 
   const fetchMentors = async (matched = false) => {
     setLoading(true);
@@ -33,15 +58,22 @@ export default function MentorBrowse() {
     fetchMentors(matchMode);
   }, [matchMode, industry]);
 
+  const visibleMentors = mentors.filter((m) => {
+    if (user?.role !== 'student') return true;
+    const mentorUser = m.userId || m;
+    const mentorId = mentorUser?._id?.toString();
+    return mentorId ? !connectedMentorIds.has(mentorId) : true;
+  });
+
   const filtered = search
-    ? mentors.filter((m) => {
+    ? visibleMentors.filter((m) => {
         const u = m.userId || m;
         return (
           u.name?.toLowerCase().includes(search.toLowerCase()) ||
           u.industry?.toLowerCase().includes(search.toLowerCase())
         );
       })
-    : mentors;
+    : visibleMentors;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
@@ -50,8 +82,8 @@ export default function MentorBrowse() {
           <h1 className="section-headline">{matchMode ? 'AI mentor matching' : 'Find a mentor'}</h1>
           <p className="section-subtle">
             {matchMode
-              ? `Showing mentor recommendations ranked for your profile (${mentors.length} results)`
-              : `${mentors.length} mentors available`}
+              ? `Showing mentor recommendations ranked for your profile (${filtered.length} results)`
+              : `${filtered.length} mentors available`}
           </p>
         </div>
         {user?.role === 'student' && (

@@ -2,8 +2,8 @@ import { forwardRef } from 'react';
 
 const getVariantClass = (variant) => {
   const variants = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm hover:shadow-md',
-    secondary: 'bg-white border border-slate-300 text-slate-900 hover:bg-slate-50 shadow-sm hover:shadow-md',
+    primary: 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 shadow-sm hover:shadow-md',
+    secondary: 'bg-white/90 border border-blue-100 text-slate-900 hover:bg-blue-50/60 shadow-sm hover:shadow-md',
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
     danger: 'bg-error-600 text-white hover:bg-error-700 shadow-sm hover:shadow-md',
     success: 'bg-success-600 text-white hover:bg-success-700 shadow-sm hover:shadow-md',

@@ -45,7 +45,7 @@ export default function Login() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-slate-900 leading-snug">Your career workspace, secured.</h2>
+            <h2 className="text-xl font-normal text-slate-900 leading-snug">Your career workspace, secured.</h2>
             <p className="text-sm text-slate-500 mt-1">Mentorship, referrals, and AI tools — all in one place.</p>
             <div className="flex flex-wrap gap-2 mt-4">
               <div className="status-chip-neutral"><ShieldCheck size={13} /> Protected sessions</div>
@@ -60,8 +60,8 @@ export default function Login() {
               <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="text-sm font-semibold text-slate-900">NxtConnect</span>
             </Link>
-            <h2 className="text-2xl font-semibold text-slate-900">Welcome back</h2>
-            <p className="text-slate-500 text-sm mt-1">Sign in to continue your progress.</p>
+            <h2 className="text-xl font-normal text-slate-900">Welcome back</h2>
+            <p className="text-slate-500 text-xs mt-1">Sign in to continue your progress.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SocketProvider } from './context/SocketContext';
@@ -43,7 +44,7 @@ const ProtectedRoute = ({ children, roles }) => {
       </div>
     </div>
   );
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" replace />;
   return children;
 };
@@ -68,6 +69,7 @@ const ROUTE_LABELS = {
 
 const Layout = ({ children }) => {
   const { user } = useAuth();
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
   const { pathname } = useLocation();
   const segments = pathname.split('/').filter(Boolean);
   const crumbs = [{ label: 'Dashboard', to: '/dashboard' }];
@@ -87,16 +89,19 @@ const Layout = ({ children }) => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen flex">
       <div className="hidden lg:block">
-        <Sidebar isOpen />
+        <Sidebar isOpen collapsed={desktopSidebarCollapsed} />
       </div>
 
       <div className="flex-1 min-w-0">
-        <TopBar />
+        <TopBar
+          desktopSidebarCollapsed={desktopSidebarCollapsed}
+          onToggleDesktopSidebar={() => setDesktopSidebarCollapsed((prev) => !prev)}
+        />
         <div className="page-shell">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-            <div className="card py-3 px-4 !rounded-xl !shadow-none bg-white/90 backdrop-blur-sm">
+            <div className="card py-3 px-4 !rounded-2xl !shadow-sm bg-white/85 backdrop-blur-md border-blue-100">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 overflow-x-auto">
                   {crumbs.map((crumb, idx) => (

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { Send } from 'lucide-react';
+import { Send, Hand } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageSkeleton } from '../components/ui';
 
@@ -131,7 +131,7 @@ export default function Chat() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-20 md:pb-4">
         {messages.length === 0 && (
           <div className="text-center text-slate-500 py-10 text-sm">
-            No messages yet. Say hello! 👋
+            <span className="inline-flex items-center gap-1.5">No messages yet. Say hello <Hand size={14} /></span>
           </div>
         )}
 
@@ -169,7 +169,7 @@ export default function Chat() {
 
       {/* Input bar */}
       <div className="border-t border-slate-200 bg-white px-4 py-3 fixed bottom-0 md:bottom-0 left-0 right-0 md:relative">
-        <div className="flex gap-2 max-w-4xl mx-auto">
+        <div className="flex gap-2 max-w-4xl mr-auto">
           <textarea
             className="input resize-none flex-1"
             rows={1}
@@ -190,6 +190,8 @@ export default function Chat() {
     </div>
   );
 }
+
+
 
 
 

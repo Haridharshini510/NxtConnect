@@ -1,15 +1,12 @@
 const User = require('../models/User');
-const { uploadResume } = require('../config/cloudinary');
 
-// ─── POST /api/upload/resume ──────────────────────────────────────────────
+// POST /api/upload/resume
 // Multer + Cloudinary handles the upload; this just saves the URL to the user
 const uploadResume = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded.' });
 
-    const resumeUrl = req.file.path; // Cloudinary URL
-
-    // Store on user document (add resumeUrl field via update)
+    const resumeUrl = req.file.path;
     await User.findByIdAndUpdate(req.user._id, { resumeUrl });
 
     res.json({ success: true, message: 'Resume uploaded!', resumeUrl });
@@ -18,7 +15,7 @@ const uploadResume = async (req, res) => {
   }
 };
 
-// ─── POST /api/upload/profile-photo ──────────────────────────────────────
+// POST /api/upload/profile-photo
 const uploadProfilePhoto = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded.' });

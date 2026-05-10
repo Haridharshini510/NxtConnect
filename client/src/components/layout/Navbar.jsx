@@ -45,7 +45,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const isActive = (to) => (to === '/dashboard' ? location.pathname === to : location.pathname.startsWith(to));

@@ -58,7 +58,7 @@ export default function WorkshopDetail() {
   const host = workshop.hostId;
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-4xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       <Link to="/workshops" className="flex items-center gap-1 text-sm text-slate-600 hover:text-primary-600 mb-6 transition-colors">
         <ArrowLeft size={14} /> Back to Workshops
       </Link>
@@ -224,6 +224,8 @@ export default function WorkshopDetail() {
     </main>
   );
 }
+
+
 
 
 

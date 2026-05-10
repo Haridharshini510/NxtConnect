@@ -153,7 +153,7 @@ export default function Landing() {
         <div className="card bg-slate-900 text-slate-100 !border-slate-800">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <h2 className="text-lg font-normal">Ready to run your career journey with structure?</h2>
+              <h2 className="text-lg text-slate-100 font-normal">Ready to run your career journey with structure?</h2>
               <p className="text-xs text-slate-300 mt-2">
                 Join NxtConnect to get mentor guidance, referral workflows, AI insights, and application discipline in one place.
               </p>

@@ -82,7 +82,7 @@ export default function Referrals() {
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.value });
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-4xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="section-headline">Referral requests</h1>
@@ -254,4 +254,6 @@ export default function Referrals() {
     </main>
   );
 }
+
+
 

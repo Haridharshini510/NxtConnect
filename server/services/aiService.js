@@ -1,12 +1,10 @@
 // server/services/aiService.js
-// Uses Hugging Face Inference API (free tier) with Mistral-7B-Instruct
+// Uses Hugging Face Inference Providers (OpenAI-compatible endpoint)
 
-const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+const HF_API_URL = 'https://router.huggingface.co/v1/chat/completions';
+const HF_MODEL = process.env.HF_MODEL || 'Qwen/Qwen2.5-7B-Instruct:fastest';
 
-/**
- * Call Mistral-7B via Hugging Face Inference API.
- * Returns the generated text string.
- */
+
 const callMistral = async (prompt, maxTokens = 512) => {
   const apiKey = process.env.HUGGINGFACE_API_KEY;
   if (!apiKey) {
@@ -20,13 +18,11 @@ const callMistral = async (prompt, maxTokens = 512) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: maxTokens,
-        temperature: 0.3,
-        top_p: 0.9,
-        return_full_text: false,
-      },
+      model: HF_MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      top_p: 0.9,
+      max_tokens: maxTokens,
     }),
   });
 
@@ -36,11 +32,8 @@ const callMistral = async (prompt, maxTokens = 512) => {
   }
 
   const data = await response.json();
-
-  // HF returns an array of generated texts
-  if (Array.isArray(data) && data[0]?.generated_text) {
-    return data[0].generated_text.trim();
-  }
+  const text = data?.choices?.[0]?.message?.content;
+  if (typeof text === 'string' && text.trim()) return text.trim();
 
   throw new Error('Unexpected HuggingFace response format');
 };
@@ -131,6 +124,35 @@ Respond ONLY with valid JSON in this exact format, nothing else:
   }
 };
 
+const analyzeResumeText = async (resumeText) => {
+  const prompt = `<s>[INST] You are an expert resume reviewer helping a student or fresh graduate improve their resume for tech/business roles. Analyze this resume and give specific, actionable feedback.
+
+RESUME:
+${resumeText}
+
+Respond ONLY with valid JSON in this exact format, nothing else:
+{
+  "overallScore": <number 0-100>,
+  "summary": "<2-3 sentence overall assessment>",
+  "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
+  "improvements": ["<specific improvement 1>", "<specific improvement 2>", "<specific improvement 3>"],
+  "missingKeywords": ["<keyword 1>", "<keyword 2>", "<keyword 3>"],
+  "atsScore": <number 0-100>,
+  "atsTips": ["<ATS tip 1>", "<ATS tip 2>"]
+}
+[/INST]`;
+
+  try {
+    const raw = await callMistral(prompt, 600);
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    return JSON.parse(jsonMatch[0]);
+  } catch (err) {
+    console.error('analyzeResumeText error:', err.message);
+    throw new Error('AI analysis failed. Please try again in a moment.');
+  }
+};
+
 /**
  * Generate a bullet point for a job experience entry.
  */
@@ -151,4 +173,4 @@ Task/responsibility: ${task}
   }
 };
 
-module.exports = { scoreMentorForStudent, analyzeResume, generateExperienceBullet, callMistral };
+module.exports = { scoreMentorForStudent, analyzeResume, analyzeResumeText, generateExperienceBullet, callMistral };

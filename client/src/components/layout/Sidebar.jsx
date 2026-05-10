@@ -13,13 +13,12 @@ import {
   Briefcase,
   Map,
   ShieldCheck,
-  LogOut,
-  Settings,
   ChevronDown,
+  X,
 } from 'lucide-react';
 import Avatar from '../ui/Avatar';
-import { useState } from 'react';
 import logo from '../../assets/logo.png';
+import brand from '../../assets/brand.png';
 
 const getNavLinks = (role) => {
   const links = [
@@ -40,11 +39,11 @@ const getNavLinks = (role) => {
   return links;
 };
 
-const Sidebar = ({ isOpen, onClose }) => {
-  const { user, logout } = useAuth();
+const Sidebar = ({ isOpen, onClose, collapsed = false }) => {
+  const { user } = useAuth();
   const location = useLocation();
   const navLinks = getNavLinks(user?.role);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const isMobileDrawer = typeof onClose === 'function';
 
   const isActive = (to) => {
     if (to === '/dashboard') return location.pathname === to;
@@ -64,93 +63,84 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200
-          transition-transform duration-300 z-50 lg:static lg:z-auto
+          fixed left-0 top-0 h-screen ${collapsed ? 'w-20' : isMobileDrawer ? 'w-72' : 'w-64'} bg-white/95 backdrop-blur-md border-r border-blue-100
+          transition-transform duration-300 z-50 lg:sticky lg:top-0 lg:z-30
           flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        {/* Logo */}
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-3 px-4 py-4 border-b border-slate-200 hover:bg-slate-50 transition-colors"
-        >
-          <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
-          <div className="hidden sm:block">
-            <div className="text-sm font-bold text-slate-900">NxtConnect</div>
-            <div className="text-xs text-slate-500">Mentorship Platform</div>
+        {isMobileDrawer && (
+          <div className="flex items-center justify-between px-4 py-4 border-b border-slate-200">
+            <Link
+              to="/dashboard"
+              onClick={onClose}
+              className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
+              <img src={brand} alt="NxtConnect brand" className="h-9 w-auto object-contain" />
+            </Link>
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center"
+              aria-label="Close menu"
+            >
+              <X size={18} className="text-slate-600" />
+            </button>
           </div>
-        </Link>
+        )}
 
+        {/* Logo */}
+        {!isMobileDrawer && (
+          <Link
+            to="/dashboard"
+            className={`flex items-center gap-0 px-4 py-4 border-b border-blue-100 hover:bg-blue-50/60 transition-colors ${collapsed ? 'justify-center' : ''}`}
+          >
+            <img src={logo} alt="NxtConnect logo" className="w-8 h-8 rounded-lg object-cover" />
+            <div className={`${collapsed ? 'hidden' : 'hidden sm:block'}`}>
+              <img src={brand} alt="NxtConnect brand" className="h-8 w-auto object-contain" />
+            </div>
+          </Link>
+        )}
+        
         {/* Nav Links */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {navLinks.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
+              onClick={isMobileDrawer ? onClose : undefined}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                 transition-colors whitespace-nowrap
+                ${collapsed ? 'justify-center' : ''}
                 ${
                   isActive(to)
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-blue-50/70 hover:text-slate-900'
                 }
               `}
             >
               <Icon size={18} className="flex-shrink-0" />
-              <span>{label}</span>
+              <span className={collapsed ? 'hidden' : ''}>{label}</span>
             </Link>
           ))}
         </nav>
 
-        {/* User Section */}
-        <div className="border-t border-slate-200 p-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-left"
-            >
-              <Avatar
-                src={user?.profilePhoto}
-                initials={user?.name?.charAt(0)}
-                size="sm"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
-                  {user?.name}
-                </p>
-                <p className="text-xs text-slate-500 truncate">
-                  {user?.role || 'User'}
-                </p>
-              </div>
-              <ChevronDown size={16} className="flex-shrink-0" />
-            </button>
-
-            {/* User dropdown menu */}
-            {showUserMenu && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden z-10">
-                <Link
-                  to="/profile/edit"
-                  className="block px-4 py-2.5 text-sm text-slate-900 hover:bg-slate-50 transition-colors"
-                  onClick={() => setShowUserMenu(false)}
-                >
-                  <Settings size={16} className="inline mr-2" />
-                  Settings
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    setShowUserMenu(false);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-error-600 hover:bg-error-50 transition-colors"
-                >
-                  <LogOut size={16} className="inline mr-2" />
-                  Logout
-                </button>
+        {/* Bottom Profile */}
+        <div className="border-t border-blue-100 p-3">
+          <button
+            type="button"
+            className={`w-full flex items-center rounded-xl hover:bg-blue-50/60 transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-2 text-left'}`}
+          >
+            <Avatar src={user?.profilePhoto} initials={user?.name?.charAt(0)} size="sm" />
+            {!collapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-900 truncate">{user?.name}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.role || 'User'}</p>
               </div>
             )}
-          </div>
+            <ChevronDown size={16} className={`text-slate-500 ${collapsed ? 'ml-2' : ''}`} />
+          </button>
         </div>
       </aside>
     </>

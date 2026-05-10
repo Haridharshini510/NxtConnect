@@ -62,7 +62,7 @@ export default function MentorProfile() {
   if (!mentor) return <div className="text-center py-20 text-slate-500">Mentor not found</div>;
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-4xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       {/* Header card */}
       <div className="card mb-6">
         <div className="flex flex-col sm:flex-row gap-6">
@@ -208,6 +208,8 @@ export default function MentorProfile() {
     </main>
   );
 }
+
+
 
 
 

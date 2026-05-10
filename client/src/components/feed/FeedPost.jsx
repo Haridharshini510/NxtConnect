@@ -1,21 +1,33 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Heart,
+  MessageCircle,
+  Trash2,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  BookOpen,
+  Lightbulb,
+  Target,
+  Trophy,
+  CircleHelp,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const typeColors = {
-  story: 'bg-primary-50 text-primary-600',
-  tip: 'bg-green-50 text-green-600',
-  opportunity: 'bg-brand-50 text-brand-600',
-  achievement: 'bg-yellow-50 text-yellow-600',
-  question: 'bg-red-50 text-red-600',
+  story: 'bg-blue-50 text-blue-700',
+  tip: 'bg-emerald-50 text-emerald-700',
+  opportunity: 'bg-indigo-50 text-indigo-700',
+  achievement: 'bg-amber-50 text-amber-700',
+  question: 'bg-rose-50 text-rose-700',
 };
 
-const typeLabels = {
-  story: '📖 Story',
-  tip: '💡 Tip',
-  opportunity: '🎯 Opportunity',
-  achievement: '🏆 Achievement',
-  question: '❓ Question',
+const typeMeta = {
+  story: { label: 'Story', Icon: BookOpen },
+  tip: { label: 'Tip', Icon: Lightbulb },
+  opportunity: { label: 'Opportunity', Icon: Target },
+  achievement: { label: 'Achievement', Icon: Trophy },
+  question: { label: 'Question', Icon: CircleHelp },
 };
 
 export default function FeedPost({ post, onLike, onComment, onDelete }) {
@@ -25,8 +37,8 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
   const [submitting, setSubmitting] = useState(false);
 
   const author = post.authorId;
-  const isLiked = post.likes?.includes(user._id) ||
-    post.likes?.some((l) => (l._id || l)?.toString() === user._id?.toString());
+  const isLiked = post.likes?.includes(user._id)
+    || post.likes?.some((l) => (l._id || l)?.toString() === user._id?.toString());
   const isOwn = author?._id?.toString() === user._id?.toString();
 
   const timeAgo = (date) => {
@@ -48,28 +60,33 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
     setSubmitting(false);
   };
 
+  const TypeIcon = typeMeta[post.type]?.Icon;
+
   return (
-    <div className="card flex flex-col gap-4">
-      {/* Author row */}
+    <article className="card flex flex-col gap-4 border-blue-100">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {author?.profilePhoto ? (
             <img src={author.profilePhoto} className="w-10 h-10 rounded-full object-cover" alt={author.name} />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-primary-600 font-bold">{author?.name?.[0]}</span>
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-blue-700 font-bold">{author?.name?.[0]}</span>
             </div>
           )}
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-slate-900 text-sm">{author?.name}</span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
-                author?.role === 'mentor' ? 'bg-primary-50 text-primary-600' : 'bg-slate-100 text-slate-600'
-              }`}>{author?.role}</span>
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
+                  author?.role === 'mentor' ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'
+                }`}
+              >
+                {author?.role}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
               <span>{author?.industry || author?.college}</span>
-              <span>·</span>
+              <span>&middot;</span>
               <span>{timeAgo(post.createdAt)}</span>
             </div>
           </div>
@@ -78,7 +95,10 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
         <div className="flex items-center gap-2">
           {post.type && (
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[post.type] || 'bg-slate-100 text-slate-600'}`}>
-              {typeLabels[post.type] || post.type}
+              <span className="inline-flex items-center gap-1">
+                {TypeIcon ? <TypeIcon size={12} /> : null}
+                {typeMeta[post.type]?.label || post.type}
+              </span>
             </span>
           )}
           {isOwn && (
@@ -89,20 +109,17 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
         </div>
       </div>
 
-      {/* Content */}
-      <p className="text-slate-900 leading-relaxed whitespace-pre-wrap text-sm">{post.content}</p>
+      <p className="text-slate-800 leading-relaxed whitespace-pre-wrap text-[0.95rem]">{post.content}</p>
 
-      {/* Tags */}
       {post.tags?.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {post.tags.map((t) => (
-            <span key={t} className="text-xs text-primary-500 hover:underline cursor-pointer">#{t}</span>
+            <span key={t} className="text-xs text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">#{t}</span>
           ))}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-4 pt-1 border-t border-slate-100">
+      <div className="flex items-center gap-4 pt-2 border-t border-blue-100">
         <button
           onClick={() => onLike(post._id)}
           className={`flex items-center gap-1.5 text-sm transition-colors ${
@@ -115,7 +132,7 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
 
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-500 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-blue-600 transition-colors"
         >
           <MessageCircle size={16} />
           <span>{post.comments?.length || 0}</span>
@@ -123,7 +140,6 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
         </button>
       </div>
 
-      {/* Comments section */}
       {showComments && (
         <div className="space-y-3 pt-1">
           {post.comments?.map((c) => (
@@ -142,10 +158,9 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
             </div>
           ))}
 
-          {/* Comment input */}
           <div className="flex gap-2 mt-2">
-            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-primary-600 text-xs font-bold">{user?.name?.[0]}</span>
+            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-blue-700 text-xs font-bold">{user?.name?.[0]}</span>
             </div>
             <div className="flex gap-2 flex-1">
               <input
@@ -167,9 +182,6 @@ export default function FeedPost({ post, onLike, onComment, onDelete }) {
           </div>
         </div>
       )}
-    </div>
+    </article>
   );
 }
-
-
-

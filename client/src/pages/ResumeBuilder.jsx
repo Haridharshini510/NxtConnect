@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
-import { Save, Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Loader, AlertCircle, CheckCircle } from 'lucide-react';
+import { Save, Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Loader, AlertCircle, CheckCircle, Upload } from 'lucide-react';
 
 const SectionHeader = ({ title, open, onToggle }) => (
   <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors rounded-t-xl">
@@ -15,6 +15,7 @@ export default function ResumeBuilder() {
   const [saving, setSaving] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [openSection, setOpenSection] = useState('Personal Info');
   const [generatingBullet, setGeneratingBullet] = useState(null);
   const [bulletTask, setBulletTask] = useState({});
@@ -45,6 +46,27 @@ export default function ResumeBuilder() {
       toast.success('AI analysis complete!');
     } catch (err) { toast.error(err.response?.data?.message || 'Analysis failed'); }
     finally { setAnalyzing(false); }
+  };
+
+  const uploadPdf = async (file) => {
+    if (!file) return;
+    if (file.type !== 'application/pdf') return toast.error('Please upload a PDF file');
+    if (file.size > 5 * 1024 * 1024) return toast.error('PDF must be under 5MB');
+
+    setUploadingPdf(true);
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+      const res = await api.post('/resume/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setResume(res.data.resume);
+      toast.success('Resume PDF uploaded and saved');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to upload PDF');
+    } finally {
+      setUploadingPdf(false);
+    }
   };
 
   const generateBullet = async (expIndex) => {
@@ -79,7 +101,7 @@ export default function ResumeBuilder() {
   const inp = "input text-sm";
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="max-w-5xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
@@ -99,6 +121,30 @@ export default function ResumeBuilder() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Builder */}
         <div className="lg:col-span-2 space-y-4">
+          <div className="card">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Resume PDF (optional)</p>
+                <p className="text-xs text-slate-500">Upload a PDF or continue filling the form below. AI can analyze either.</p>
+                {resume.uploadedResume?.fileName && (
+                  <p className="text-xs text-slate-600 mt-1">
+                    Uploaded: <span className="font-medium">{resume.uploadedResume.fileName}</span>
+                  </p>
+                )}
+              </div>
+              <label className="btn-secondary text-sm inline-flex items-center gap-2 cursor-pointer">
+                {uploadingPdf ? <Loader size={14} className="animate-spin" /> : <Upload size={14} />}
+                {uploadingPdf ? 'Uploading...' : 'Upload PDF'}
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  disabled={uploadingPdf}
+                  onChange={(e) => uploadPdf(e.target.files?.[0])}
+                />
+              </label>
+            </div>
+          </div>
 
           {/* Personal Info */}
           <div className="card p-0 overflow-hidden">
@@ -276,7 +322,7 @@ export default function ResumeBuilder() {
             <div className="card text-center py-8 border-dashed border-2 border-slate-200">
               <Sparkles size={32} className="text-slate-400 mx-auto mb-3" />
               <p className="text-sm font-medium text-slate-700">No analysis yet</p>
-              <p className="text-xs text-slate-400 mt-1">Fill in your resume and click "AI Analyze"</p>
+              <p className="text-xs text-slate-400 mt-1">Upload a PDF or fill in your resume, then click "AI Analyze"</p>
             </div>
           )}
 
@@ -355,7 +401,7 @@ export default function ResumeBuilder() {
               )}
 
               <p className="text-xs text-slate-400 text-center">
-                Analyzed {new Date(analysis.analyzedAt).toLocaleString()}
+                Analyzed from {analysis.source === 'pdf' ? 'uploaded PDF' : 'form data'} on {new Date(analysis.analyzedAt).toLocaleString()}
               </p>
             </>
           )}
@@ -364,6 +410,8 @@ export default function ResumeBuilder() {
     </main>
   );
 }
+
+
 
 
 

@@ -67,7 +67,7 @@ export default function EditProfile() {
   if (!user || loading) return <PageSkeleton variant="editProfile" />;
 
   return (
-    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
+    <main className="max-w-2xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Edit Profile</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
@@ -155,4 +155,6 @@ export default function EditProfile() {
     </main>
   );
 }   
+
+
 

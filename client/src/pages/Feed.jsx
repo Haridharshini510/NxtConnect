@@ -112,26 +112,26 @@ export default function Feed() {
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-8">
+    <main className="w-full px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Alumni Feed</h1>
-        <p className="text-slate-600 text-sm mt-1">Stories, tips, and opportunities from the community</p>
+        <h1 className="section-headline">Alumni Feed</h1>
+        <p className="text-slate-600 text-sm mt-1">Stories, tips, and opportunities from the NxtConnect community</p>
       </div>
 
       {/* Create post */}
-      <div className="card mb-6">
+      <div className="card mb-6 border-blue-100">
         <form onSubmit={handlePost} className="space-y-3">
-          <div className="flex gap-3">
-            <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
               {user?.profilePhoto ? (
                 <img src={user.profilePhoto} className="w-9 h-9 rounded-full object-cover" alt="" />
               ) : (
-                <span className="text-primary-600 font-bold">{user?.name?.[0]}</span>
+                <span className="text-blue-700 font-bold">{user?.name?.[0]}</span>
               )}
             </div>
             <textarea
-              className="input flex-1 resize-none text-sm"
-              rows={3}
+              className="input w-full flex-1 min-w-0 resize-none text-sm"
+              rows={4}
               placeholder="Share a career tip, story, or opportunity with the community..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -148,7 +148,7 @@ export default function Feed() {
                   key={t}
                   onClick={() => setPostType(t)}
                   className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors flex items-center gap-1 ${
-                    postType === t ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    postType === t ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   {React.createElement(typeIcons[t], { size: 12 })}
@@ -174,12 +174,12 @@ export default function Feed() {
       {/* Filter tabs */}
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         <button onClick={() => setFilterType('')}
-          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!filterType ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!filterType ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white' : 'bg-slate-100 text-slate-700'}`}>
           All
         </button>
         {POST_TYPES.map((t) => (
           <button key={t} onClick={() => setFilterType(filterType === t ? '' : t)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex items-center gap-1 ${filterType === t ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex items-center gap-1 ${filterType === t ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
             {React.createElement(typeIcons[t], { size: 12 })}
             {typeLabels[t]}
           </button>
@@ -218,5 +218,7 @@ export default function Feed() {
     </main>
   );
 }
+
+
 
 

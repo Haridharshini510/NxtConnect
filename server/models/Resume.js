@@ -50,6 +50,12 @@ const resumeSchema = new mongoose.Schema(
         link: { type: String, default: '' },
       },
     ],
+    uploadedResume: {
+      url: { type: String, default: '' },
+      fileName: { type: String, default: '' },
+      extractedText: { type: String, default: '' },
+      uploadedAt: { type: Date },
+    },
     // Cached AI analysis result
     aiAnalysis: {
       overallScore: { type: Number },
@@ -60,6 +66,7 @@ const resumeSchema = new mongoose.Schema(
       missingKeywords: [{ type: String }],
       atsTips: [{ type: String }],
       analyzedAt: { type: Date },
+      source: { type: String, enum: ['form', 'pdf'] },
     },
   },
   { timestamps: true }

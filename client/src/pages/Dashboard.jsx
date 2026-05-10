@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { Users, Briefcase, Map, ArrowRight, MessageSquare } from 'lucide-react';
+import { Users, Briefcase, Map, ArrowRight, MessageSquare, Rss } from 'lucide-react';
 import { OnboardingModal, PageSkeleton } from '../components/ui';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ connections: 0, jobs: 0, roadmaps: 0 });
-  const [recentConnections, setRecentConnections] = useState([]);
+  const [feedPreview, setFeedPreview] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Only show if not already dismissed and not completed on the account
@@ -22,26 +21,17 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const [connRes, jobRes, roadmapRes] = await Promise.all([
-          api.get('/connections/my'),
-          api.get('/jobs?limit=1'),
-          api.get('/roadmaps'),
-        ]);
-        setStats({
-          connections: connRes.data.connections.length,
-          jobs: jobRes.data.total,
-          roadmaps: roadmapRes.data.roadmaps.length,
-        });
-        setRecentConnections(connRes.data.connections.slice(0, 3));
+        const feedRes = await api.get('/feed', { params: { page: 1, limit: 4 } });
+        setFeedPreview(feedRes.data.posts || []);
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
   if (loading) return <PageSkeleton variant="dashboard" />;
@@ -64,20 +54,6 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        {[
-          { label: 'Connections', value: stats.connections, icon: Users },
-          { label: 'Jobs available', value: stats.jobs, icon: Briefcase },
-          { label: 'Roadmaps', value: stats.roadmaps, icon: Map },
-        ].map(({ label, value, icon: Icon }) => (
-          <div key={label} className="card text-center py-4">
-            <Icon size={20} className="text-primary-700 mx-auto mb-2" />
-            <div className="text-2xl font-semibold text-slate-900">{value}</div>
-            <div className="text-xs text-slate-500">{label}</div>
-          </div>
-        ))}
-      </div>
-
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -97,44 +73,46 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {recentConnections.length > 0 ? (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Recent connections</h2>
-            <Link to="/connections" className="text-sm text-primary-700 hover:underline">View all</Link>
-          </div>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-slate-900">Community feed</h2>
+          <Link to="/feed" className="text-sm text-primary-700 hover:underline">View all</Link>
+        </div>
+        {feedPreview.length > 0 ? (
           <div className="space-y-3">
-            {recentConnections.map((conn) => {
-              const other = user.role === 'mentor' ? conn.studentId : conn.mentorId;
-              const chatRoomId = conn.chatRoomId?._id || conn.chatRoomId;
+            {feedPreview.map((post) => {
+              const author = post.authorId;
               return (
-                <div key={conn._id} className="card flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary-700 font-bold">{other?.name?.[0]}</span>
+                <Link key={post._id} to="/feed" className="card block hover:border-blue-200 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-700 font-bold">{author?.name?.[0]}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-semibold text-slate-900 truncate">{author?.name || 'Community member'}</p>
+                        {post.type && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">
+                            {post.type}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-700 line-clamp-2">{post.content}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-sm text-slate-900">{other?.name}</div>
-                    <div className="text-xs text-slate-500 capitalize">{conn.status}</div>
-                  </div>
-                  {conn.status === 'active' && chatRoomId && (
-                    <Link to={`/chat/${chatRoomId}`} className="text-primary-700 hover:text-primary-800">
-                      <MessageSquare size={18} />
-                    </Link>
-                  )}
-                </div>
+                </Link>
               );
             })}
           </div>
-        </div>
-      ) : (
-        !loading && (
+        ) : (
           <div className="card text-center py-10">
-            <p className="font-medium text-slate-700">No recent connections yet</p>
-            <p className="text-sm text-slate-500 mt-1">Start by browsing mentors and sending your first request.</p>
-            <Link to="/mentors" className="btn-primary mt-4">Find mentors</Link>
+            <Rss size={28} className="mx-auto text-slate-300 mb-2" />
+            <p className="font-medium text-slate-700">No feed posts yet</p>
+            <p className="text-sm text-slate-500 mt-1">Be the first to share something with the community.</p>
+            <Link to="/feed" className="btn-primary mt-4">Open feed</Link>
           </div>
-        )
-      )}
+        )}
+      </div>
 
       {!user?.bio && (
         <div className="mt-6 p-4 bg-primary-50 border border-primary-100 rounded-xl flex items-center justify-between gap-3">

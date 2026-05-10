@@ -45,8 +45,8 @@ export default function MyConnections() {
   const filtered = filter === 'all' ? connections : connections.filter((c) => c.status === filter);
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-8">
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">My Connections</h1>
+    <main className="max-w-4xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+      <h1 className="section-headline mb-2">My Connections</h1>
       <p className="text-slate-600 text-sm mb-6">{connections.length} total connections</p>
 
       {/* Filter tabs */}
@@ -93,5 +93,7 @@ export default function MyConnections() {
     </main>
   );
 }
+
+
 
 
