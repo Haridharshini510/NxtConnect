@@ -18,6 +18,7 @@ export default function Jobs() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ company: '', title: '', location: '', type: 'full-time', description: '', applicationUrl: '', isReferralAvailable: false, skills: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [deletingJobId, setDeletingJobId] = useState('');
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -48,6 +49,23 @@ export default function Jobs() {
   };
 
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.value });
+
+  const handleDeleteJob = async (job) => {
+    if (!job?._id) return;
+    const confirmed = window.confirm(`Delete "${job.title}" at ${job.company}?`);
+    if (!confirmed) return;
+
+    setDeletingJobId(job._id);
+    try {
+      await api.delete(`/jobs/${job._id}`);
+      setJobs((prev) => prev.filter((j) => j._id !== job._id));
+      toast.success('Job post deleted');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete job');
+    } finally {
+      setDeletingJobId('');
+    }
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
@@ -122,7 +140,20 @@ export default function Jobs() {
         <div className="text-center py-20 text-slate-500">No jobs found</div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {jobs.map((job) => <JobCard key={job._id} job={job} />)}
+          {jobs.map((job) => {
+            const postedById = typeof job.postedBy === 'object' ? job.postedBy?._id : job.postedBy;
+            const canDelete = Boolean(user?._id && postedById && user._id === postedById);
+
+            return (
+              <JobCard
+                key={job._id}
+                job={job}
+                canDelete={canDelete}
+                deleting={deletingJobId === job._id}
+                onDelete={handleDeleteJob}
+              />
+            );
+          })}
         </div>
       )}
     </main>

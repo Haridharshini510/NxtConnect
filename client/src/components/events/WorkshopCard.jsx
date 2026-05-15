@@ -1,10 +1,21 @@
-import { Calendar, Clock, Users, Video, PlayCircle, Tag } from 'lucide-react';
+import { Calendar, Clock, Users, Video, PlayCircle, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function WorkshopCard({ workshop, onRegister, onUnregister, isRegistered }) {
+export default function WorkshopCard({
+  workshop,
+  onRegister,
+  onUnregister,
+  isRegistered,
+  currentUserId,
+  canDelete = false,
+  onDelete,
+  deleting = false,
+}) {
   const host = workshop.hostId;
   const isPast = new Date(workshop.scheduledAt) < new Date();
   const isFull = workshop.attendees?.length >= workshop.maxCapacity;
+  const hostId = host?._id || host;
+  const isHost = Boolean(hostId && currentUserId && hostId.toString() === currentUserId.toString());
 
   return (
     <div className="card hover:shadow-md transition-shadow flex flex-col gap-4">
@@ -76,6 +87,23 @@ export default function WorkshopCard({ workshop, onRegister, onUnregister, isReg
           <Link to={`/workshops/${workshop._id}`} className="btn-secondary w-full text-center text-sm block">
             View Details
           </Link>
+        ) : isHost ? (
+          <div className="flex gap-2">
+            <Link to={`/workshops/${workshop._id}`} className="btn-primary flex-1 text-center text-sm">
+              View Details
+            </Link>
+            {canDelete && (
+              <button
+                type="button"
+                onClick={() => onDelete?.(workshop._id)}
+                disabled={deleting}
+                className="px-3 rounded-lg text-sm border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-1"
+              >
+                <Trash2 size={13} />
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            )}
+          </div>
         ) : isRegistered ? (
           <div className="flex gap-2">
             <Link to={`/workshops/${workshop._id}`} className="btn-primary flex-1 text-center text-sm">

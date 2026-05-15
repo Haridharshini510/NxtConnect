@@ -15,6 +15,7 @@ export default function Workshops() {
   const [filter, setFilter] = useState('upcoming');
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingWorkshopId, setDeletingWorkshopId] = useState('');
   const [form, setForm] = useState({
     title: '', description: '', type: 'live', category: '',
     scheduledAt: '', durationMinutes: 60, meetingLink: '',
@@ -79,6 +80,28 @@ export default function Workshops() {
   };
 
   const set = (f) => (e) => setForm({ ...form, [f]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+
+  const handleDelete = async (id) => {
+    const workshop = workshops.find((w) => w._id === id);
+    const confirmed = window.confirm(`Delete event "${workshop?.title || 'this event'}"?`);
+    if (!confirmed) return;
+
+    setDeletingWorkshopId(id);
+    try {
+      await api.delete(`/workshops/${id}`);
+      setWorkshops((prev) => prev.filter((w) => w._id !== id));
+      setRegisteredIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      toast.success('Event deleted');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete event');
+    } finally {
+      setDeletingWorkshopId('');
+    }
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
@@ -205,8 +228,14 @@ export default function Workshops() {
               key={w._id}
               workshop={w}
               isRegistered={registeredIds.has(w._id)}
+              currentUserId={user?._id}
+              canDelete={Boolean(
+                (w?.hostId?._id?.toString?.() || w?.hostId?.toString?.()) === user?._id?.toString?.()
+              )}
+              deleting={deletingWorkshopId === w._id}
               onRegister={handleRegister}
               onUnregister={handleUnregister}
+              onDelete={handleDelete}
             />
           ))}
         </div>

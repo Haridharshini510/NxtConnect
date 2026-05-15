@@ -1,22 +1,128 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import { Map, Clock, ArrowRight } from 'lucide-react';
+import { Map, Clock, ArrowRight, Plus, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function Roadmaps() {
+  const { user } = useAuth();
   const [roadmaps, setRoadmaps] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    title: '',
+    category: '',
+    description: '',
+    tags: '',
+    stepsText: '',
+  });
+
+  const fetchRoadmaps = async () => {
+    setLoading(true);
+    try {
+      const r = await api.get('/roadmaps');
+      setRoadmaps(r.data.roadmaps);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to load roadmaps');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    api.get('/roadmaps').then((r) => setRoadmaps(r.data.roadmaps)).catch(console.error).finally(() => setLoading(false));
+    fetchRoadmaps();
   }, []);
+
+  const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleCreateRoadmap = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const parsedSteps = form.stepsText
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((title, idx) => ({
+          order: idx + 1,
+          title,
+          description: '',
+          estimatedWeeks: 0,
+          resources: [],
+          skills: [],
+        }));
+
+      await api.post('/roadmaps', {
+        title: form.title,
+        category: form.category,
+        description: form.description,
+        tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        steps: parsedSteps,
+      });
+
+      toast.success('Roadmap added');
+      setShowForm(false);
+      setForm({ title: '', category: '', description: '', tags: '', stepsText: '' });
+      fetchRoadmaps();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add roadmap');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const totalWeeks = (roadmap) => roadmap.steps?.reduce((acc, s) => acc + (s.estimatedWeeks || 0), 0) || 0;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
-      <h1 className="section-headline mb-2">Career Roadmaps</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="section-headline">Career Roadmaps</h1>
+        {(user?.role === 'mentor' || user?.role === 'admin') && (
+          <button onClick={() => setShowForm((v) => !v)} className="btn-primary flex items-center gap-1 text-sm">
+            <Plus size={16} /> Add Roadmap
+          </button>
+        )}
+      </div>
       <p className="text-slate-600 text-sm mb-8">Step-by-step paths curated by industry mentors</p>
+
+      {showForm && (
+        <div className="card mb-6 border-brand-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-slate-900">Create Roadmap</h2>
+            <button onClick={() => setShowForm(false)}><X size={18} className="text-slate-500" /></button>
+          </div>
+
+          <form onSubmit={handleCreateRoadmap} className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Title *</label>
+              <input className="input" value={form.title} onChange={set('title')} required />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Category *</label>
+              <input className="input" value={form.category} onChange={set('category')} required />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-700 mb-1">Description *</label>
+              <textarea className="input resize-none" rows={3} value={form.description} onChange={set('description')} required />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-700 mb-1">Tags (comma separated)</label>
+              <input className="input" placeholder="Frontend, DSA, Interview" value={form.tags} onChange={set('tags')} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-700 mb-1">Steps (one per line)</label>
+              <textarea className="input resize-none" rows={5} value={form.stepsText} onChange={set('stepsText')} placeholder="Learn basics&#10;Build projects&#10;Prepare for interviews" />
+            </div>
+            <div className="sm:col-span-2 flex justify-end">
+              <button type="submit" className="btn-primary" disabled={submitting}>
+                {submitting ? 'Adding...' : 'Add Roadmap'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

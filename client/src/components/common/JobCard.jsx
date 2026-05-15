@@ -1,4 +1,4 @@
-import { MapPin, Clock, ExternalLink, Gift } from 'lucide-react';
+import { MapPin, Clock, ExternalLink, Gift, Trash2 } from 'lucide-react';
 
 const typeColors = {
   'full-time': 'bg-green-50 text-green-700',
@@ -7,7 +7,7 @@ const typeColors = {
   contract: 'bg-orange-50 text-orange-700',
 };
 
-export default function JobCard({ job }) {
+export default function JobCard({ job, canDelete = false, onDelete, deleting = false }) {
   const poster = job.postedBy;
 
   return (
@@ -58,12 +58,24 @@ export default function JobCard({ job }) {
           <span>Posted by</span>
           <span className="font-medium text-slate-700">{poster?.name}</span>
         </div>
-        {job.applicationUrl && (
-          <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer"
-            className="btn-primary text-xs flex items-center gap-1">
-            Apply <ExternalLink size={11} />
-          </a>
-        )}
+        <div className="flex items-center gap-2">
+          {canDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete?.(job)}
+              disabled={deleting}
+              className="px-2.5 py-1.5 rounded-md text-xs font-medium border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-1"
+            >
+              <Trash2 size={11} /> {deleting ? 'Deleting...' : 'Delete'}
+            </button>
+          )}
+          {job.applicationUrl && (
+            <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer"
+              className="btn-primary text-xs flex items-center gap-1">
+              Apply <ExternalLink size={11} />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

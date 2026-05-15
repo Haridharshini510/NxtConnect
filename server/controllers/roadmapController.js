@@ -40,7 +40,7 @@ const createRoadmap = async (req, res) => {
       steps: steps || [],
       tags: tags || [],
       createdBy: req.user._id,
-      isPublished: req.user.role === 'admin',
+      isPublished: true,
     });
     res.status(201).json({ roadmap });
   } catch (error) {
