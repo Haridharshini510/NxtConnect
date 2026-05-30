@@ -29,6 +29,11 @@ const checkEmailValidation = [
   validate,
 ];
 
+const resendVerificationValidation = [
+  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  validate,
+];
+
 const createPostValidation = [
   body('content').isString().trim().isLength({ min: 1, max: 2000 }).withMessage('Post content must be 1-2000 characters'),
   body('type').optional().isIn(['story', 'tip', 'opportunity', 'achievement', 'question']).withMessage('Invalid post type'),
@@ -85,6 +90,7 @@ module.exports = {
   registerValidation,
   loginValidation,
   checkEmailValidation,
+  resendVerificationValidation,
   createPostValidation,
   addCommentValidation,
   createOrUpdateJobValidation,

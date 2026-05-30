@@ -72,7 +72,8 @@ export default function Register() {
         skills: form.skills ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : [],
         careerGoals: form.careerGoals ? form.careerGoals.split(',').map((s) => s.trim()).filter(Boolean) : [],
       });
-      navigate('/dashboard');
+      toast.success('Account created. Verification link sent to your email.');
+      navigate(`/login?email=${encodeURIComponent(form.email)}`);
     } catch (err) {
       const apiMessage = err.response?.data?.message;
       if (err.response?.data?.captchaRequired) {

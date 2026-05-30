@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, checkEmail, getCsrfToken, refresh, logout, getMe, changePassword } = require('../controllers/authController');
+const { register, login, checkEmail, getCsrfToken, verifyEmail, resendVerification, refresh, logout, getMe, changePassword } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
-const { registerValidation, loginValidation, checkEmailValidation } = require('../middleware/validation');
+const { registerValidation, loginValidation, checkEmailValidation, resendVerificationValidation } = require('../middleware/validation');
 const { rateLimit } = require('../middleware/rateLimit');
 const { captchaGuard } = require('../middleware/captcha');
 
@@ -23,6 +23,8 @@ const checkEmailLimiter = rateLimit({
 router.post('/register', loginRegisterLimiter, captchaGuard('register'), registerValidation, register);
 router.post('/login', loginRegisterLimiter, captchaGuard('login'), loginValidation, login);
 router.post('/check-email', checkEmailLimiter, captchaGuard('check-email'), checkEmailValidation, checkEmail);
+router.post('/resend-verification', checkEmailLimiter, captchaGuard('check-email'), resendVerificationValidation, resendVerification);
+router.get('/verify-email', verifyEmail);
 router.get('/csrf', getCsrfToken);
 router.post('/refresh', refresh);
 router.post('/logout', logout);

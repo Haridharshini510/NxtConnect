@@ -11,6 +11,7 @@ import { ChevronRight, ShieldCheck } from 'lucide-react';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import Dashboard from './pages/Dashboard';
 import MentorBrowse from './pages/Mentorbrowse';
 import MentorProfile from './pages/MentorProfile';
@@ -153,6 +154,7 @@ const AppRoutes = () => {
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
+        <Route path="/verify-email" element={user ? <Navigate to="/dashboard" /> : <VerifyEmail />} />
 
         {/* Protected — Phase 1 */}
         <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />

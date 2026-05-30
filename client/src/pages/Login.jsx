@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ShieldCheck, LockKeyhole } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import authLoginImg from '../assets/auth-login.png';
 import logo from '../assets/logo.png';
+import { authAPI } from '../api';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = useState({ email: searchParams.get('email') || '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +22,21 @@ export default function Login() {
       await login(form.email, form.password);
       navigate('/dashboard');
     } catch (err) {
+      if (err.response?.data?.code === 'EMAIL_REVERIFICATION_REQUIRED' || err.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+        toast.error(err.response?.data?.message || 'Please verify your email before signing in.');
+        try {
+          setResending(true);
+          if (err.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+            await authAPI.resendVerification(form.email);
+            toast.success('Verification link sent. Check your inbox.');
+          }
+        } catch {
+          toast.error('Could not resend verification link. Please try again.');
+        } finally {
+          setResending(false);
+        }
+        return;
+      }
       if (err.response?.data?.captchaRequired) {
         toast.error('Too many attempts. Please complete captcha and try again.');
       } else {
@@ -96,6 +114,9 @@ export default function Login() {
             <button type="submit" className="btn-primary w-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
+            {resending && (
+              <p className="text-xs text-slate-500 text-center">Sending verification link...</p>
+            )}
           </form>
 
           <p className="text-center text-sm text-slate-500 mt-5">
