@@ -45,7 +45,8 @@ const issueCsrfToken = (res, existingToken) => {
   res.cookie('csrfToken', token, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure:true,
+    sameSite: 'none',
     path: '/',
     maxAge: 24 * 60 * 60 * 1000,
   });
