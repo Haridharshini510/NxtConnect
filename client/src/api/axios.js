@@ -7,11 +7,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const readCookie = (name) => {
-  if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[2]) : null;
-};
+let csrfTokenMemory = null;
 
 let isRefreshing = false;
 let pendingRequests = [];
@@ -27,7 +23,7 @@ const resolvePending = (error) => {
 api.interceptors.request.use((config) => {
   const method = (config.method || 'get').toUpperCase();
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    const csrfToken = readCookie('csrfToken');
+    const csrfToken = csrfTokenMemory;
     if (csrfToken) {
       config.headers = config.headers || {};
       config.headers['X-CSRF-Token'] = csrfToken;
@@ -37,7 +33,13 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const reqUrl = res.config?.url || '';
+    if (reqUrl.includes('/auth/csrf') && res.data?.csrfToken) {
+      csrfTokenMemory = res.data.csrfToken;
+    }
+    return res;
+  },
   async (err) => {
     const originalRequest = err.config || {};
     const reqUrl = originalRequest.url || '';
@@ -55,10 +57,11 @@ api.interceptors.response.use(
       err.response?.status === 403 &&
       err.response?.data?.message === 'Invalid CSRF token';
 
-    if (isCsrfError && isMutating && !isAuthRequest && !originalRequest._csrfRetry) {
+    if (isCsrfError && isMutating && !reqUrl.includes('/auth/csrf') && !originalRequest._csrfRetry) {
       originalRequest._csrfRetry = true;
       try {
-        await api.get('/auth/csrf');
+        const { data } = await api.get('/auth/csrf');
+        if (data?.csrfToken) csrfTokenMemory = data.csrfToken;
         return api(originalRequest);
       } catch (csrfErr) {
         return Promise.reject(csrfErr);

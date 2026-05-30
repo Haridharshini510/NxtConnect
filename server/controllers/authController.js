@@ -11,11 +11,13 @@ const ACCESS_TOKEN_EXPIRES_IN = process.env.JWT_EXPIRE || '15m';
 const REFRESH_TOKEN_EXPIRES_DAYS = Number(process.env.REFRESH_TOKEN_DAYS || 7);
 const EMAIL_REVERIFY_DAYS = Number(process.env.EMAIL_REVERIFY_DAYS || 30);
 const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+const isProduction = process.env.NODE_ENV === 'production';
+const cookieSameSite = isProduction ? 'none' : 'lax';
 
 const getCookieOptions = (maxAgeMs) => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isProduction,
+  sameSite: cookieSameSite,
   path: '/',
   maxAge: maxAgeMs,
 });
@@ -44,9 +46,8 @@ const issueCsrfToken = (res, existingToken) => {
   const token = existingToken || crypto.randomBytes(32).toString('hex');
   res.cookie('csrfToken', token, {
     httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    secure:true,
-    sameSite: 'none',
+    secure: isProduction,
+    sameSite: cookieSameSite,
     path: '/',
     maxAge: 24 * 60 * 60 * 1000,
   });
