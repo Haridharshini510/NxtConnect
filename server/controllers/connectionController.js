@@ -7,6 +7,7 @@ const MentorProfile = require('../models/MentorProfile');
 const User = require('../models/User');
 const { createNotification } = require('../services/notificationService');
 const { sendConnectionRequestEmail, sendConnectionAcceptedEmail } = require('../services/emailService');
+const { sanitizeText } = require('../utils/sanitize');
 
 const requestConnection = async (req, res) => {
   try {
@@ -28,7 +29,11 @@ const requestConnection = async (req, res) => {
       return res.status(400).json({ message: 'Mentor has reached their mentee limit' });
     }
 
-    const connection = await Connection.create({ studentId, mentorId, requestMessage });
+    const connection = await Connection.create({
+      studentId,
+      mentorId,
+      requestMessage: sanitizeText(requestMessage, { maxLen: 500 }),
+    });
 
     const mentor = await User.findById(mentorId);
 

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import authRegisterImg from '../assets/auth-register.png';
 import logo from '../assets/logo.png';
+import { authAPI } from '../api';
 
 const INDUSTRIES = [
   'Technology',
@@ -37,13 +38,28 @@ export default function Register() {
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
-  const goNext = (e) => {
+
+  const goNext = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) {
       toast.error('Name, email, and password are required');
       return;
     }
-    setStep(2);
+
+    setLoading(true);
+    try {
+      await authAPI.checkEmail(form.email);
+      setStep(2);
+    } catch (err) {
+      const apiMessage = err.response?.data?.message;
+      if (err.response?.data?.captchaRequired) {
+        toast.error('Too many attempts. Please complete captcha and try again.');
+      } else {
+        toast.error(apiMessage || "We couldn't continue. Try signing in if you already have an account.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -58,7 +74,12 @@ export default function Register() {
       });
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      const apiMessage = err.response?.data?.message;
+      if (err.response?.data?.captchaRequired) {
+        toast.error('Too many attempts. Please complete captcha and try again.');
+      } else {
+        toast.error(apiMessage || "We couldn't continue. Try signing in if you already have an account.");
+      }
     } finally {
       setLoading(false);
     }
@@ -138,7 +159,9 @@ export default function Register() {
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                   <input type="password" className="input" placeholder="Minimum 6 characters" value={form.password} onChange={set('password')} required minLength={6} />
                 </div>
-                <button type="submit" className="btn-primary w-full">Continue</button>
+                <button type="submit" className="btn-primary w-full" disabled={loading}>
+                  {loading ? 'Checking...' : 'Create account'}
+                </button>
               </>
             ) : (
               <>
@@ -188,4 +211,3 @@ export default function Register() {
     </div>
   );
 }
-

@@ -1,19 +1,27 @@
 const User = require('../models/User');
 const MentorProfile = require('../models/MentorProfile');
+const { uploadBufferToCloudinary } = require('../cloudinary');
+const { recordUploadEvent } = require('../middleware/uploadSecurity');
 
 // @desc  Get user profile by ID
 // @route GET /api/users/:id
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select('-passwordHash');
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isSelf = req.user && req.user._id.toString() === user._id.toString();
+    const safeUser = user.toObject();
+    if (!isSelf && req.user.role !== 'admin') {
+      delete safeUser.email;
+    }
 
     let mentorProfile = null;
     if (user.role === 'mentor') {
       mentorProfile = await MentorProfile.findOne({ userId: user._id });
     }
 
-    res.json({ user, mentorProfile });
+    res.json({ user: safeUser, mentorProfile });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -32,7 +40,18 @@ const updateProfile = async (req, res) => {
 
     // If a file was uploaded via multer/cloudinary
     if (req.file) {
-      updates.profilePhoto = req.file.path;
+      const uploaded = await uploadBufferToCloudinary({
+        buffer: req.file.buffer,
+        folder: 'nextconnect/profile-photos',
+        publicId: `profile_${req.user._id}_${Date.now()}`,
+        resourceType: 'image',
+      });
+      updates.profilePhoto = uploaded.secure_url;
+      await recordUploadEvent({
+        userId: req.user._id,
+        kind: 'profile_photo',
+        bytes: req.file.size || req.file.buffer.length,
+      });
     }
 
     const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true });

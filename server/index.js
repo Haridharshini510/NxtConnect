@@ -3,15 +3,19 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const connectDB = require('./db');
 const socketHandler = require('./socketHandler');
+const { csrfProtection } = require('./middleware/csrf');
 
 dotenv.config();
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -34,6 +38,17 @@ app.use(cors({
   credentials: true
 }));
 
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -43,8 +58,10 @@ const io = new Server(server, {
 });
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '200kb' }));
+app.use(express.urlencoded({ extended: true, limit: '200kb' }));
+app.use(cookieParser());
+app.use(csrfProtection);
 app.set('io', io);
 
 // Phase 1

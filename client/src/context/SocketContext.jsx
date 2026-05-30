@@ -23,9 +23,8 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const token = localStorage.getItem('token');
     socketRef.current = io(SOCKET_URL, {
-      auth: { token },
+      withCredentials: true,
       reconnection: true,
       reconnectionAttempts: 5,
       timeout: 10000,

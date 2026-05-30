@@ -12,7 +12,7 @@ const steps = [
         <Select
           label="I am a..."
           value={formData.role}
-          onChange={(value) => setFormData({ ...formData, role: value })}
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
           options={[
             { value: 'student', label: 'Student seeking mentorship' },
             { value: 'mentor', label: 'Professional offering mentorship' },

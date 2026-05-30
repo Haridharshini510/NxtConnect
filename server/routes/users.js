@@ -7,12 +7,17 @@ const {
   deactivateAccount
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
-const { upload } = require('../cloudinary');
+const multer = require('multer');
+const { magicFileTypeGuard, enforceUploadQuota, optionalMalwareScan } = require('../middleware/uploadSecurity');
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 router.get('/:id', protect, getUserById);
 router.put(
   '/me',
   protect,
   upload.single('profilePhoto'),
+  magicFileTypeGuard('image'),
+  enforceUploadQuota({ kind: 'profile_photo', maxFilesPerDay: 30, maxBytesPerDay: 20 * 1024 * 1024 }),
+  optionalMalwareScan(),
   updateProfile
 );
 router.put('/me/mentor-profile', protect, updateMentorProfile);

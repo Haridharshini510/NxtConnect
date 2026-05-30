@@ -6,13 +6,14 @@ const {
   updateWorkshop, deleteWorkshop,
 } = require('../controllers/workshopController');
 const { protect, requireRole } = require('../middleware/auth');
+const { createOrUpdateWorkshopValidation } = require('../middleware/validation');
 
 router.get('/', protect, getWorkshops);
 router.get('/:id', protect, getWorkshopById);
-router.post('/', protect, requireRole('mentor', 'admin'), createWorkshop);
+router.post('/', protect, requireRole('mentor', 'admin'), createOrUpdateWorkshopValidation, createWorkshop);
 router.post('/:id/register', protect, registerForWorkshop);
 router.delete('/:id/register', protect, unregisterFromWorkshop);
-router.put('/:id', protect, requireRole('mentor', 'admin'), updateWorkshop);
+router.put('/:id', protect, requireRole('mentor', 'admin'), createOrUpdateWorkshopValidation, updateWorkshop);
 router.delete('/:id', protect, requireRole('mentor', 'admin'), deleteWorkshop);
 
 module.exports = router;

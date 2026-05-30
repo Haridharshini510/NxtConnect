@@ -20,5 +20,16 @@ const upload = multer({ storage });
 const uploadProfilePhoto = multer({ storage });
 const uploadResume = multer({ storage });
 
+const uploadBufferToCloudinary = async ({ buffer, folder, publicId, resourceType = 'image', format, options = {} }) => {
+  const mimePrefix = resourceType === 'raw' ? 'application/octet-stream' : 'image/jpeg';
+  const dataUri = `data:${mimePrefix};base64,${buffer.toString('base64')}`;
+  return cloudinary.uploader.upload(dataUri, {
+    folder,
+    public_id: publicId,
+    resource_type: resourceType,
+    format,
+    ...options,
+  });
+};
 
-module.exports = { cloudinary, upload, uploadProfilePhoto, uploadResume };
+module.exports = { cloudinary, upload, uploadProfilePhoto, uploadResume, uploadBufferToCloudinary };

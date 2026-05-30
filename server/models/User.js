@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name is required'],
     trim: true,
+    maxlength: [80, 'Name must be at most 80 characters'],
   },
   email: {
     type: String,
@@ -27,6 +28,7 @@ const userSchema = new mongoose.Schema({
   college: {
     type: String,
     trim: true,
+    maxlength: [120, 'College must be at most 120 characters'],
   },
   graduationYear: {
     type: Number,
@@ -34,14 +36,17 @@ const userSchema = new mongoose.Schema({
   industry: {
     type: String,
     trim: true,
+    maxlength: [80, 'Industry must be at most 80 characters'],
   },
   skills: [{
     type: String,
     trim: true,
+    maxlength: [50, 'Skill must be at most 50 characters'],
   }],
   careerGoals: [{
     type: String,
     trim: true,
+    maxlength: [120, 'Career goal must be at most 120 characters'],
   }],
   profilePhoto: {
     type: String, // URL to cloudinary or local path
@@ -49,6 +54,14 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
+  },
+  refreshTokenHash: {
+    type: String,
+    default: null,
+  },
+  refreshTokenExpiresAt: {
+    type: Date,
+    default: null,
   },
 }, {
   timestamps: true,

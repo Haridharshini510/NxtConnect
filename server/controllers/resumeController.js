@@ -1,7 +1,8 @@
 const Resume = require('../models/Resume');
 const pdfParse = require('pdf-parse');
-const { cloudinary } = require('../cloudinary');
+const { uploadBufferToCloudinary, cloudinary } = require('../cloudinary');
 const { analyzeResume, analyzeResumeText, generateExperienceBullet } = require('../services/aiService');
+const { recordUploadEvent } = require('../middleware/uploadSecurity');
 
 // @desc  Get own resume (create blank if doesn't exist)
 // @route GET /api/resume
@@ -81,21 +82,22 @@ const uploadMyResumePdf = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-    const isPdf = req.file.mimetype === 'application/pdf' || req.file.originalname?.toLowerCase().endsWith('.pdf');
-    if (!isPdf) return res.status(400).json({ message: 'Only PDF files are allowed' });
-
     const parsed = await pdfParse(req.file.buffer);
     const extractedText = (parsed?.text || '').trim();
     if (!extractedText) {
       return res.status(400).json({ message: 'Could not extract text from this PDF. Please try a text-based PDF.' });
     }
 
-    const dataUri = `data:application/pdf;base64,${req.file.buffer.toString('base64')}`;
-    const uploaded = await cloudinary.uploader.upload(dataUri, {
+    const publicId = `resume_${req.user._id}_${Date.now()}`;
+    const uploaded = await uploadBufferToCloudinary({
+      buffer: req.file.buffer,
       folder: 'nextconnect/resumes',
-      resource_type: 'raw',
-      public_id: `resume_${req.user._id}_${Date.now()}`,
+      publicId,
+      resourceType: 'raw',
       format: 'pdf',
+      options: {
+        type: 'private',
+      },
     });
 
     const resume = await Resume.findOneAndUpdate(
@@ -103,6 +105,7 @@ const uploadMyResumePdf = async (req, res) => {
       {
         uploadedResume: {
           url: uploaded.secure_url,
+          publicId,
           fileName: req.file.originalname,
           extractedText,
           uploadedAt: new Date(),
@@ -111,6 +114,7 @@ const uploadMyResumePdf = async (req, res) => {
       { new: true, upsert: true, runValidators: true }
     );
 
+    await recordUploadEvent({ userId: req.user._id, kind: 'resume_pdf', bytes: req.file.size || req.file.buffer.length });
     res.json({ resume });
   } catch (err) {
     console.error('uploadMyResumePdf error:', err);
@@ -133,4 +137,26 @@ const generateBullet = async (req, res) => {
   }
 };
 
-module.exports = { getMyResume, saveResume, analyzeMyResume, generateBullet, uploadMyResumePdf };
+// @desc  Get signed URL for uploaded resume PDF
+// @route GET /api/resume/uploaded-url
+const getUploadedResumeUrl = async (req, res) => {
+  try {
+    const resume = await Resume.findOne({ userId: req.user._id });
+    const publicId = resume?.uploadedResume?.publicId;
+    if (!publicId) return res.status(404).json({ message: 'No uploaded resume found' });
+
+    const expiresAt = Math.floor(Date.now() / 1000) + 60 * 5;
+    const signedUrl = cloudinary.utils.private_download_url(
+      publicId,
+      'pdf',
+      { resource_type: 'raw', type: 'private', expires_at: expiresAt, attachment: true }
+    );
+
+    res.json({ url: signedUrl, fileName: resume.uploadedResume.fileName || 'resume.pdf' });
+  } catch (err) {
+    console.error('getUploadedResumeUrl error:', err);
+    res.status(500).json({ message: 'Failed to create download URL' });
+  }
+};
+
+module.exports = { getMyResume, saveResume, analyzeMyResume, generateBullet, uploadMyResumePdf, getUploadedResumeUrl };

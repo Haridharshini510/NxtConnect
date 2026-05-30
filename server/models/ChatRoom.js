@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
   senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  content: { type: String },
+  content: { type: String, maxlength: 2000 },
   type: { type: String, default: 'text' },
   readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   sentAt: { type: Date },
@@ -23,7 +23,7 @@ const chatRoomSchema = new mongoose.Schema({
   messages: [messageSchema],
   lastMessage: {
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    content: String,
+    content: { type: String, maxlength: 2000 },
     sentAt: Date,
   },
   lastMessageAt: {

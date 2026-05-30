@@ -52,6 +52,7 @@ const resumeSchema = new mongoose.Schema(
     ],
     uploadedResume: {
       url: { type: String, default: '' },
+      publicId: { type: String, default: '' },
       fileName: { type: String, default: '' },
       extractedText: { type: String, default: '' },
       uploadedAt: { type: Date },

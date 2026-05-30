@@ -1,6 +1,7 @@
 const Workshop = require('../models/Workshop');
 const { createNotification } = require('../services/notificationService');
 const { sendWorkshopRegistrationEmail } = require('../services/emailService');
+const { sanitizeText, sanitizeStringArray } = require('../utils/sanitize');
 
 // @desc  Get all published workshops
 // @route GET /api/workshops
@@ -43,10 +44,15 @@ const createWorkshop = async (req, res) => {
     const { title, description, type, category, scheduledAt, durationMinutes, meetingLink, maxCapacity, tags, isPaid, price } = req.body;
     const workshop = await Workshop.create({
       hostId: req.user._id,
-      title, description, type, category, scheduledAt,
+      title: sanitizeText(title, { maxLen: 150 }),
+      description: sanitizeText(description, { maxLen: 5000 }),
+      type,
+      category: sanitizeText(category, { maxLen: 100 }),
+      scheduledAt,
       durationMinutes: durationMinutes || 60,
-      meetingLink, maxCapacity: maxCapacity || 100,
-      tags: tags || [],
+      meetingLink: sanitizeText(meetingLink, { maxLen: 300 }),
+      maxCapacity: maxCapacity || 100,
+      tags: sanitizeStringArray(tags, { maxItems: 20, maxLen: 40 }),
       isPaid: isPaid || false,
       price: price || 0,
     });
@@ -129,7 +135,21 @@ const updateWorkshop = async (req, res) => {
     if (workshop.hostId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized' });
     }
-    const updated = await Workshop.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updates = {};
+    if (req.body.title !== undefined) updates.title = sanitizeText(req.body.title, { maxLen: 150 });
+    if (req.body.description !== undefined) updates.description = sanitizeText(req.body.description, { maxLen: 5000 });
+    if (req.body.type !== undefined) updates.type = req.body.type;
+    if (req.body.category !== undefined) updates.category = sanitizeText(req.body.category, { maxLen: 100 });
+    if (req.body.scheduledAt !== undefined) updates.scheduledAt = req.body.scheduledAt;
+    if (req.body.durationMinutes !== undefined) updates.durationMinutes = req.body.durationMinutes;
+    if (req.body.meetingLink !== undefined) updates.meetingLink = sanitizeText(req.body.meetingLink, { maxLen: 300 });
+    if (req.body.recordingUrl !== undefined) updates.recordingUrl = sanitizeText(req.body.recordingUrl, { maxLen: 300 });
+    if (req.body.maxCapacity !== undefined) updates.maxCapacity = req.body.maxCapacity;
+    if (req.body.tags !== undefined) updates.tags = sanitizeStringArray(req.body.tags, { maxItems: 20, maxLen: 40 });
+    if (req.body.isPaid !== undefined) updates.isPaid = req.body.isPaid;
+    if (req.body.price !== undefined) updates.price = req.body.price;
+
+    const updated = await Workshop.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
     res.json({ workshop: updated });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });

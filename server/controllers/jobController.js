@@ -1,4 +1,5 @@
 const Job = require('../models/Job');
+const { sanitizeText, sanitizeStringArray } = require('../utils/sanitize');
 
 // @desc  Get all jobs (with filters)
 // @route GET /api/jobs
@@ -38,11 +39,17 @@ const createJob = async (req, res) => {
     const { company, title, location, type, description, requirements, isReferralAvailable, applicationUrl, deadline, industry, skills } = req.body;
     const job = await Job.create({
       postedBy: req.user._id,
-      company, title, location, type, description,
-      requirements: requirements || [],
+      company: sanitizeText(company, { maxLen: 120 }),
+      title: sanitizeText(title, { maxLen: 140 }),
+      location: sanitizeText(location, { maxLen: 120 }),
+      type,
+      description: sanitizeText(description, { maxLen: 4000 }),
+      requirements: sanitizeStringArray(requirements, { maxItems: 30, maxLen: 200 }),
       isReferralAvailable: isReferralAvailable || false,
-      applicationUrl, deadline, industry,
-      skills: skills || [],
+      applicationUrl: sanitizeText(applicationUrl, { maxLen: 300 }),
+      deadline,
+      industry: sanitizeText(industry, { maxLen: 80 }),
+      skills: sanitizeStringArray(skills, { maxItems: 30, maxLen: 50 }),
     });
     res.status(201).json({ job });
   } catch (error) {
@@ -61,7 +68,20 @@ const updateJob = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    const updated = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updates = {};
+    if (req.body.company !== undefined) updates.company = sanitizeText(req.body.company, { maxLen: 120 });
+    if (req.body.title !== undefined) updates.title = sanitizeText(req.body.title, { maxLen: 140 });
+    if (req.body.location !== undefined) updates.location = sanitizeText(req.body.location, { maxLen: 120 });
+    if (req.body.type !== undefined) updates.type = req.body.type;
+    if (req.body.description !== undefined) updates.description = sanitizeText(req.body.description, { maxLen: 4000 });
+    if (req.body.requirements !== undefined) updates.requirements = sanitizeStringArray(req.body.requirements, { maxItems: 30, maxLen: 200 });
+    if (req.body.isReferralAvailable !== undefined) updates.isReferralAvailable = req.body.isReferralAvailable;
+    if (req.body.applicationUrl !== undefined) updates.applicationUrl = sanitizeText(req.body.applicationUrl, { maxLen: 300 });
+    if (req.body.deadline !== undefined) updates.deadline = req.body.deadline;
+    if (req.body.industry !== undefined) updates.industry = sanitizeText(req.body.industry, { maxLen: 80 });
+    if (req.body.skills !== undefined) updates.skills = sanitizeStringArray(req.body.skills, { maxItems: 30, maxLen: 50 });
+
+    const updated = await Job.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
     res.json({ job: updated });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

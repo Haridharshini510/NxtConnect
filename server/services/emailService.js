@@ -1,6 +1,7 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const FROM = process.env.RESEND_FROM_EMAIL || 'NextConnect <onboarding@resend.dev>';
 
 /**
@@ -8,6 +9,11 @@ const FROM = process.env.RESEND_FROM_EMAIL || 'NextConnect <onboarding@resend.de
  * All email functions are fire-and-forget — they won't crash the main request if they fail.
  */
 const sendEmail = async ({ to, subject, html }) => {
+  if (!resend) {
+    console.warn('RESEND_API_KEY missing. Skipping email send.');
+    return;
+  }
+
   try {
     await resend.emails.send({ from: FROM, to, subject, html });
     console.log(`📧 Email sent to ${to}: ${subject}`);

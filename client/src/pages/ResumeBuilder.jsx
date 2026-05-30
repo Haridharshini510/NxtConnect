@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
-import { Save, Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Loader, AlertCircle, CheckCircle, Upload } from 'lucide-react';
+import { Save, Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Loader, AlertCircle, CheckCircle, Upload, Download } from 'lucide-react';
 
 const SectionHeader = ({ title, open, onToggle }) => (
   <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 transition-colors rounded-t-xl">
@@ -12,10 +12,12 @@ const SectionHeader = ({ title, open, onToggle }) => (
 
 export default function ResumeBuilder() {
   const [resume, setResume] = useState(null);
+  const [loadingResume, setLoadingResume] = useState(true);
   const [saving, setSaving] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [downloadingUploadedPdf, setDownloadingUploadedPdf] = useState(false);
   const [openSection, setOpenSection] = useState('Personal Info');
   const [generatingBullet, setGeneratingBullet] = useState(null);
   const [bulletTask, setBulletTask] = useState({});
@@ -24,17 +26,27 @@ export default function ResumeBuilder() {
     api.get('/resume').then((r) => {
       setResume(r.data.resume);
       if (r.data.resume.aiAnalysis?.analyzedAt) setAnalysis(r.data.resume.aiAnalysis);
-    }).catch(() => toast.error('Failed to load resume'));
+    }).catch(() => toast.error('Failed to load resume'))
+      .finally(() => setLoadingResume(false));
   }, []);
 
-  const save = async () => {
+  const persistResume = async (showToast = true) => {
     setSaving(true);
     try {
       const res = await api.put('/resume', resume);
       setResume(res.data.resume);
-      toast.success('Resume saved!');
-    } catch { toast.error('Failed to save'); }
-    finally { setSaving(false); }
+      if (showToast) toast.success('Resume saved!');
+      return res.data.resume;
+    } catch {
+      toast.error('Failed to save');
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const save = async () => {
+    await persistResume(true);
   };
 
   const analyze = async () => {
@@ -69,6 +81,44 @@ export default function ResumeBuilder() {
     }
   };
 
+  const downloadUploadedPdf = async () => {
+    if (!resume?.uploadedResume?.url && !resume?.uploadedResume?.publicId) {
+      toast.error('No uploaded resume found');
+      return;
+    }
+
+    setDownloadingUploadedPdf(true);
+    let fileUrl = resume?.uploadedResume?.url || '';
+    try {
+      const signed = await api.get('/resume/uploaded-url');
+      fileUrl = signed.data?.url || fileUrl;
+      const outFileName = signed.data?.fileName || resume?.uploadedResume?.fileName || 'resume.pdf';
+      if (!fileUrl) throw new Error('Missing signed download URL');
+
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error('Could not fetch uploaded resume');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = outFileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success('Uploaded resume downloaded');
+    } catch {
+      if (fileUrl) {
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+        toast.success('Opened uploaded resume');
+      } else {
+        toast.error('Failed to download uploaded resume');
+      }
+    } finally {
+      setDownloadingUploadedPdf(false);
+    }
+  };
+
   const generateBullet = async (expIndex) => {
     const exp = resume.experience[expIndex];
     const task = bulletTask[expIndex];
@@ -95,7 +145,39 @@ export default function ResumeBuilder() {
   const removeProj = (i) => setResume({ ...resume, projects: resume.projects.filter((_, idx) => idx !== i) });
   const setProj = (i, field, val) => { const p = [...resume.projects]; p[i] = { ...p[i], [field]: val }; setResume({ ...resume, projects: p }); };
 
-  if (!resume) return <div className="card flex h-64 items-center justify-center text-slate-500"><Loader className="animate-spin mr-2" /> Loading resume...</div>;
+
+  if (loadingResume) {
+    return (
+      <main className="max-w-5xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="section-headline">Resume builder</h1>
+            <p className="section-subtle">Build your resume section by section and get AI feedback.</p>
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="card flex h-40 items-center justify-center text-slate-500">
+              <Loader className="animate-spin mr-2" />
+              Loading resume...
+            </div>
+            <div className="card h-64" />
+          </div>
+          <div className="card h-52" />
+        </div>
+      </main>
+    );
+  }
+
+  if (!resume) {
+    return (
+      <main className="max-w-5xl mr-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
+        <div className="card flex h-40 items-center justify-center text-slate-500">
+          Could not load resume data.
+        </div>
+      </main>
+    );
+  }
 
   const toggle = (s) => setOpenSection(openSection === s ? '' : s);
   const inp = "input text-sm";
@@ -122,27 +204,38 @@ export default function ResumeBuilder() {
         {/* Builder */}
         <div className="lg:col-span-2 space-y-4">
           <div className="card">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="space-y-1">
                 <p className="text-sm font-semibold text-slate-900">Resume PDF (optional)</p>
-                <p className="text-xs text-slate-500">Upload a PDF or continue filling the form below. AI can analyze either.</p>
+                <p className="text-xs text-slate-500 leading-relaxed">Upload a PDF or continue filling the form below. AI can analyze either.</p>
                 {resume.uploadedResume?.fileName && (
                   <p className="text-xs text-slate-600 mt-1">
                     Uploaded: <span className="font-medium">{resume.uploadedResume.fileName}</span>
                   </p>
                 )}
               </div>
-              <label className="btn-secondary text-sm inline-flex items-center gap-2 cursor-pointer">
-                {uploadingPdf ? <Loader size={14} className="animate-spin" /> : <Upload size={14} />}
-                {uploadingPdf ? 'Uploading...' : 'Upload PDF'}
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  disabled={uploadingPdf}
-                  onChange={(e) => uploadPdf(e.target.files?.[0])}
-                />
-              </label>
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-center sm:justify-end sm:ml-auto">
+                <label className="btn-secondary text-sm inline-flex items-center gap-2 cursor-pointer">
+                  {uploadingPdf ? <Loader size={14} className="animate-spin" /> : <Upload size={14} />}
+                  {uploadingPdf ? 'Uploading...' : 'Upload PDF'}
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    disabled={uploadingPdf}
+                    onChange={(e) => uploadPdf(e.target.files?.[0])}
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={downloadUploadedPdf}
+                  disabled={!resume.uploadedResume?.url || downloadingUploadedPdf}
+                  className="btn-secondary text-sm inline-flex items-center gap-2"
+                >
+                  {downloadingUploadedPdf ? <Loader size={14} className="animate-spin" /> : <Download size={14} />}
+                  {downloadingUploadedPdf ? 'Downloading...' : 'Download PDF'}
+                </button>
+              </div>
             </div>
           </div>
 

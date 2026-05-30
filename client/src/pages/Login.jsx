@@ -19,7 +19,11 @@ export default function Login() {
       await login(form.email, form.password);
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      if (err.response?.data?.captchaRequired) {
+        toast.error('Too many attempts. Please complete captcha and try again.');
+      } else {
+        toast.error(err.response?.data?.message || 'Invalid email or password.');
+      }
     } finally {
       setLoading(false);
     }
@@ -46,7 +50,7 @@ export default function Login() {
 
           <div>
             <h2 className="text-xl font-normal text-slate-900 leading-snug">Your career workspace, secured.</h2>
-            <p className="text-sm text-slate-500 mt-1">Mentorship, referrals, and AI tools — all in one place.</p>
+            <p className="text-sm text-slate-500 mt-1">Mentorship, referrals, and AI tools all in one place.</p>
             <div className="flex flex-wrap gap-2 mt-4">
               <div className="status-chip-neutral"><ShieldCheck size={13} /> Protected sessions</div>
               <div className="status-chip-neutral"><LockKeyhole size={13} /> Role-based access</div>
@@ -103,4 +107,3 @@ export default function Login() {
     </div>
   );
 }
-

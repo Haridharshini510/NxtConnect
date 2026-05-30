@@ -2,10 +2,31 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const ChatRoom = require('./models/ChatRoom');
+const { sanitizeText } = require('./utils/sanitize');
 
 const socketHandler = (io) => {
+  const parseCookies = (cookieHeader = '') => {
+    return cookieHeader.split(';').reduce((acc, part) => {
+      const [rawKey, ...rawVal] = part.split('=');
+      if (!rawKey) return acc;
+      const key = rawKey.trim();
+      const value = rawVal.join('=').trim();
+      if (!key) return acc;
+      acc[key] = decodeURIComponent(value);
+      return acc;
+    }, {});
+  };
+
+  const isParticipantInRoom = async (roomId, userId) => {
+    if (!mongoose.Types.ObjectId.isValid(roomId)) return false;
+    const room = await ChatRoom.findById(roomId).select('participants');
+    if (!room) return false;
+    return room.participants.some((p) => p.toString() === userId);
+  };
+
   io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
+    const cookies = parseCookies(socket.handshake.headers?.cookie || '');
+    const token = cookies.accessToken || socket.handshake.auth?.token;
     if (!token) return next(new Error('Authentication required'));
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -23,8 +44,14 @@ const socketHandler = (io) => {
     socket.join(`user:${socket.userId}`);
 
     // ── Chat room events ──────────────────────────────────────────
-    socket.on('join_room', (roomId) => {
-      socket.join(roomId);
+    socket.on('join_room', async (roomId) => {
+      try {
+        const allowed = await isParticipantInRoom(roomId, socket.userId);
+        if (!allowed) return socket.emit('error', { message: 'Access denied for room join' });
+        socket.join(roomId);
+      } catch {
+        socket.emit('error', { message: 'Failed to join room' });
+      }
     });
 
     socket.on('leave_room', (roomId) => {
@@ -37,7 +64,7 @@ const socketHandler = (io) => {
           return socket.emit('error', { message: 'Invalid chat room id' });
         }
 
-        const trimmedContent = content?.trim();
+        const trimmedContent = sanitizeText(content, { maxLen: 2000 });
         if (!trimmedContent) {
           return socket.emit('error', { message: 'Message content is required' });
         }
@@ -85,12 +112,20 @@ const socketHandler = (io) => {
       }
     });
 
-    socket.on('user_typing', ({ roomId, isTyping }) => {
-      socket.to(roomId).emit('user_typing', { userId: socket.userId, isTyping });
+    socket.on('user_typing', async ({ roomId, isTyping }) => {
+      try {
+        const allowed = await isParticipantInRoom(roomId, socket.userId);
+        if (!allowed) return;
+        socket.to(roomId).emit('user_typing', { userId: socket.userId, isTyping: Boolean(isTyping) });
+      } catch {
+        // ignore typing failures
+      }
     });
 
     socket.on('mark_read', async ({ roomId }) => {
       try {
+        const allowed = await isParticipantInRoom(roomId, socket.userId);
+        if (!allowed) return socket.emit('error', { message: 'Access denied for mark_read' });
         await ChatRoom.updateMany(
           { _id: roomId, 'messages.readBy': { $ne: socket.userId } },
           { $addToSet: { 'messages.$[].readBy': socket.userId } }

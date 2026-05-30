@@ -1,5 +1,6 @@
 const FeedPost = require('../models/Feedpost');
 const { createNotification } = require('../services/notificationService');
+const { sanitizeText, sanitizeStringArray } = require('../utils/sanitize');
 
 // @desc  Get feed posts (paginated)
 // @route GET /api/feed
@@ -31,9 +32,9 @@ const createPost = async (req, res) => {
     const { content, type, tags } = req.body;
     const post = await FeedPost.create({
       authorId: req.user._id,
-      content,
+      content: sanitizeText(content, { maxLen: 2000 }),
       type: type || 'story',
-      tags: tags || [],
+      tags: sanitizeStringArray(tags, { maxItems: 10, maxLen: 30 }),
       college: req.user.college || '',
     });
     const populated = await post.populate('authorId', 'name profilePhoto role industry college');
@@ -85,12 +86,13 @@ const addComment = async (req, res) => {
   try {
     const io = req.app.get('io');
     const { content } = req.body;
-    if (!content?.trim()) return res.status(400).json({ message: 'Comment cannot be empty' });
+    const cleanContent = sanitizeText(content, { maxLen: 500 });
+    if (!cleanContent) return res.status(400).json({ message: 'Comment cannot be empty' });
 
     const post = await FeedPost.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    post.comments.push({ authorId: req.user._id, content: content.trim() });
+    post.comments.push({ authorId: req.user._id, content: cleanContent });
     await post.save();
 
     // Notify post author
@@ -99,7 +101,7 @@ const addComment = async (req, res) => {
         userId: post.authorId,
         type: 'feed_comment',
         title: 'New comment on your post',
-        body: `${req.user.name}: "${content.slice(0, 60)}${content.length > 60 ? '...' : ''}"`,
+        body: `${req.user.name}: "${cleanContent.slice(0, 60)}${cleanContent.length > 60 ? '...' : ''}"`,
         link: '/feed',
         fromUser: req.user._id,
         meta: { postId: post._id },
