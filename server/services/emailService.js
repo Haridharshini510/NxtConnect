@@ -2,7 +2,7 @@ const { Resend } = require('resend');
 
 const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
-const FROM = process.env.RESEND_FROM_EMAIL || 'NxtConnect <noreply@nxtconnect.indevs.in.com>';
+const FROM = process.env.RESEND_FROM_EMAIL || 'NxtConnect <noreply@nxtconnect.indevs.in>';
 
 /**
  * Send an email using Resend.
