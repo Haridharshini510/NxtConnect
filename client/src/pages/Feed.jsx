@@ -114,7 +114,7 @@ export default function Feed() {
   return (
     <main className="w-full px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
       <div className="mb-6">
-        <h1 className="section-headline">Alumni Feed</h1>
+        <h1 className="section-headline">Feed</h1>
         <p className="text-slate-600 text-sm mt-1">Stories, tips, and opportunities from the NxtConnect community</p>
       </div>
 
